@@ -1212,14 +1212,14 @@ function StepModal({
           </div>
           <div>
             <label className="block text-xs text-[var(--t-text-muted)] mb-1.5">
-              Explanation <span className="text-[var(--t-text-faint)]">(Markdown supported, Shift+Enter for new line)</span>
+              Explanation <span className="text-[var(--t-text-faint)]">(Markdown: # ## ### **bold** *italic* `code` - drag to expand)</span>
             </label>
             <textarea
               value={explanation}
               onChange={(e) => setExplanation(e.target.value)}
-              placeholder="Explain what this step does...&#10;&#10;Supports **bold**, *italic*, `code`, and more."
-              rows={3}
-              className="w-full px-3 py-2 bg-[var(--t-bg-primary)] border border-[var(--t-border)] rounded-md text-[var(--t-text-primary)] placeholder-[var(--t-text-faint)] focus:ring-2 focus:ring-[var(--t-accent-blue)] outline-none resize-y min-h-[80px]"
+              placeholder={"Explain what this step does...\n\nSupports:\n# Heading 1\n## Heading 2\n**bold** *italic* `code`"}
+              rows={4}
+              className="w-full px-3 py-2 bg-[var(--t-bg-primary)] border border-[var(--t-border)] rounded-md text-[var(--t-text-primary)] placeholder-[var(--t-text-faint)] focus:ring-2 focus:ring-[var(--t-accent-blue)] outline-none resize-y min-h-[100px] max-h-[400px]"
             />
           </div>
           <div>
