@@ -1,11 +1,36 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import dynamic from "next/dynamic";
 import hljs from "highlight.js";
 import AIAssistant from "@/components/ai-assistant";
 import DiffViewer from "@/components/diff-viewer";
 import CommunityChat from "@/components/community-chat";
 import Link from "next/link";
+
+// Dynamically load Monaco Editor to avoid SSR issues
+const MonacoEditor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.default), { ssr: false, loading: () => <div className="h-[200px] flex items-center justify-center bg-[var(--t-bg-primary)] text-[var(--t-text-faint)] text-xs">Loading editor...</div> });
+
+function MonacoEditorWrapper({ value, onChange, language, height }: { value: string; onChange: (v: string | undefined) => void; language: string; height: string }) {
+  return (
+    <MonacoEditor
+      height={height}
+      language={language}
+      value={value}
+      onChange={onChange}
+      theme="vs-dark"
+      options={{
+        minimap: { enabled: false },
+        fontSize: 13,
+        lineNumbers: "on",
+        scrollBeyondLastLine: false,
+        automaticLayout: true,
+        tabSize: 2,
+        wordWrap: "on",
+      }}
+    />
+  );
+}
 import {
   Minus,
   Search,
@@ -583,6 +608,66 @@ function generateId() {
   return Math.random().toString(36).substring(2, 11);
 }
 
+// Simple markdown renderer for explanations
+function renderMarkdown(text: string): React.ReactNode {
+  // Split by newlines first to preserve line breaks
+  const lines = text.split('\n');
+  return lines.map((line, i) => {
+    // Process inline markdown: **bold**, *italic*, `code`, [link](url)
+    const parts: React.ReactNode[] = [];
+    let remaining = line;
+    let key = 0;
+    
+    while (remaining.length > 0) {
+      // Bold: **text**
+      const boldMatch = remaining.match(/\*\*(.+?)\*\*/);
+      // Italic: *text*
+      const italicMatch = remaining.match(/(?<!\*)\*([^*]+)\*(?!\*)/);
+      // Code: `text`
+      const codeMatch = remaining.match(/`([^`]+)`/);
+      // Link: [text](url)
+      const linkMatch = remaining.match(/\[([^\]]+)\]\(([^)]+)\)/);
+      
+      // Find the earliest match
+      const matches = [
+        boldMatch && { type: 'bold', match: boldMatch, index: boldMatch.index! },
+        italicMatch && { type: 'italic', match: italicMatch, index: italicMatch.index! },
+        codeMatch && { type: 'code', match: codeMatch, index: codeMatch.index! },
+        linkMatch && { type: 'link', match: linkMatch, index: linkMatch.index! },
+      ].filter(Boolean).sort((a, b) => a!.index - b!.index);
+      
+      if (matches.length === 0) {
+        parts.push(remaining);
+        break;
+      }
+      
+      const first = matches[0]!;
+      if (first.index > 0) {
+        parts.push(remaining.slice(0, first.index));
+      }
+      
+      if (first.type === 'bold') {
+        parts.push(<strong key={key++} className="font-semibold">{first.match[1]}</strong>);
+      } else if (first.type === 'italic') {
+        parts.push(<em key={key++}>{first.match[1]}</em>);
+      } else if (first.type === 'code') {
+        parts.push(<code key={key++} className="px-1 py-0.5 bg-[var(--t-bg-tertiary)] rounded text-xs font-mono">{first.match[1]}</code>);
+      } else if (first.type === 'link') {
+        parts.push(<a key={key++} href={first.match[2]} target="_blank" rel="noopener noreferrer" className="text-[var(--t-accent-blue)] hover:underline">{first.match[1]}</a>);
+      }
+      
+      remaining = remaining.slice(first.index + first.match[0].length);
+    }
+    
+    return (
+      <span key={i}>
+        {parts}
+        {i < lines.length - 1 && <br />}
+      </span>
+    );
+  });
+}
+
 // Toast notification
 function Toast({ message, visible }: { message: string; visible: boolean }) {
   return (
@@ -1008,6 +1093,8 @@ function StepModal({
   const [code, setCode] = useState("");
   const [images, setImages] = useState<StepImage[]>([]);
   const [uploadingImageId, setUploadingImageId] = useState<string | null>(null);
+  const [useMonaco, setUseMonaco] = useState(false);
+  const [monacoLang, setMonacoLang] = useState("shell");
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const uploadImage = async (imageId: string, file: File) => {
@@ -1102,24 +1189,67 @@ function StepModal({
             />
           </div>
           <div>
-            <label className="block text-xs text-[var(--t-text-muted)] mb-1.5">Explanation</label>
+            <label className="block text-xs text-[var(--t-text-muted)] mb-1.5">
+              Explanation <span className="text-[var(--t-text-faint)]">(Markdown supported, Shift+Enter for new line)</span>
+            </label>
             <textarea
               value={explanation}
               onChange={(e) => setExplanation(e.target.value)}
-              placeholder="Explain what this step does..."
-              rows={2}
-              className="w-full px-3 py-2 bg-[var(--t-bg-primary)] border border-[var(--t-border)] rounded-md text-[var(--t-text-primary)] placeholder-[var(--t-text-faint)] focus:ring-2 focus:ring-[var(--t-accent-blue)] outline-none resize-none"
+              placeholder="Explain what this step does...&#10;&#10;Supports **bold**, *italic*, `code`, and more."
+              rows={3}
+              className="w-full px-3 py-2 bg-[var(--t-bg-primary)] border border-[var(--t-border)] rounded-md text-[var(--t-text-primary)] placeholder-[var(--t-text-faint)] focus:ring-2 focus:ring-[var(--t-accent-blue)] outline-none resize-y min-h-[80px]"
             />
           </div>
           <div>
-            <label className="block text-xs text-[var(--t-text-muted)] mb-1.5">Code / Command</label>
-            <textarea
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="git init"
-              rows={4}
-              className="w-full px-3 py-2 bg-[var(--t-bg-primary)] border border-[var(--t-border)] rounded-md text-[var(--t-text-primary)] placeholder-[var(--t-text-faint)] focus:ring-2 focus:ring-[var(--t-accent-blue)] focus:border-[var(--t-accent-blue)] outline-none resize-y min-h-[100px] font-mono text-sm"
-            />
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs text-[var(--t-text-muted)]">Code / Command</label>
+              <div className="flex items-center gap-2">
+                {useMonaco && (
+                  <select
+                    value={monacoLang}
+                    onChange={(e) => setMonacoLang(e.target.value)}
+                    className="px-2 py-0.5 text-[10px] bg-[var(--t-bg-tertiary)] border border-[var(--t-border)] rounded text-[var(--t-text-muted)]"
+                  >
+                    <option value="shell">Shell</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="python">Python</option>
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="json">JSON</option>
+                    <option value="yaml">YAML</option>
+                    <option value="markdown">Markdown</option>
+                    <option value="sql">SQL</option>
+                    <option value="dockerfile">Dockerfile</option>
+                  </select>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setUseMonaco(!useMonaco)}
+                  className={`px-2 py-0.5 text-[10px] rounded transition-colors ${useMonaco ? "bg-[var(--t-accent-blue)] text-white" : "bg-[var(--t-bg-tertiary)] text-[var(--t-text-muted)] hover:bg-[var(--t-bg-hover)]"}`}
+                >
+                  {useMonaco ? "Monaco" : "Plain"}
+                </button>
+              </div>
+            </div>
+            {useMonaco ? (
+              <div className="border border-[var(--t-border)] rounded-md overflow-hidden">
+                <MonacoEditorWrapper
+                  value={code}
+                  onChange={(v) => setCode(v || "")}
+                  language={monacoLang}
+                  height="200px"
+                />
+              </div>
+            ) : (
+              <textarea
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="git init"
+                rows={4}
+                className="w-full px-3 py-2 bg-[var(--t-bg-primary)] border border-[var(--t-border)] rounded-md text-[var(--t-text-primary)] placeholder-[var(--t-text-faint)] focus:ring-2 focus:ring-[var(--t-accent-blue)] focus:border-[var(--t-accent-blue)] outline-none resize-y min-h-[100px] font-mono text-sm"
+              />
+            )}
           </div>
 
           {/* Screenshots Section */}
@@ -2362,12 +2492,13 @@ export default function ITPTutorial() {
                 >
                   Repositories
                 </button>
-                <Link
-                  href="/thread"
-                  className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide rounded-md transition-colors bg-[var(--t-bg-tertiary)] text-[var(--t-text-muted)] hover:bg-[var(--t-bg-hover)] hover:text-[var(--t-text-primary)]"
+                <span
+                  className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide rounded-md bg-[var(--t-bg-tertiary)] text-[var(--t-text-faint)] cursor-not-allowed flex items-center gap-1.5 opacity-60"
+                  title="Thread - Coming Soon"
                 >
+                  <Lock className="w-3 h-3" />
                   Thread
-                </Link>
+                </span>
                 {activeTab === "tutorials" && isAdmin && (
                   <button
                     onClick={() => {
@@ -2985,9 +3116,9 @@ export default function ITPTutorial() {
 
                         {/* Step content */}
                         <div className="p-4 space-y-3">
-                          {result.step.explanation && (
-                            <p className="text-sm text-[var(--t-text-muted)]">{result.step.explanation}</p>
-                          )}
+                      {result.step.explanation && (
+                        <p className="text-sm text-[var(--t-text-muted)] leading-relaxed">{renderMarkdown(result.step.explanation)}</p>
+                      )}
                           {/* Show images before code */}
                           {result.step.images?.filter(img => img.position === "before").map((img) => (
                             <div key={img.id} className="rounded-md overflow-hidden border border-[var(--t-border)]">
@@ -3182,7 +3313,7 @@ export default function ITPTutorial() {
                       </div>
                       <div className="p-4 space-y-3">
                         {step.explanation && (
-                          <p className="text-sm text-[var(--t-text-muted)]">{step.explanation}</p>
+                          <p className="text-sm text-[var(--t-text-muted)] leading-relaxed">{renderMarkdown(step.explanation)}</p>
                         )}
 
                         {/* Images BEFORE code */}
