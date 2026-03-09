@@ -85,7 +85,7 @@
         "code": "<nav class=\"navbar navbar-expand-lg bg-body-tertiary\" data-bs-theme=\"dark\">\n  <div class=\"container-fluid\">\n    <a class=\"navbar-brand\" href=\"#\">Navbar</a>\n    <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNavDropdown\" aria-controls=\"navbarNavDropdown\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n      <span class=\"navbar-toggler-icon\"></span>\n    </button>\n    <div class=\"collapse navbar-collapse\" id=\"navbarNavDropdown\">\n      <ul class=\"navbar-nav\">\n        <li class=\"nav-item\">\n          <a class=\"nav-link active\" aria-current=\"page\" href=\"{{ base_url }}/\">Home</a>\n        </li>\n        <li class=\"nav-item\">\n          <a class=\"nav-link\" href=\"{{ base_url }}/contactus\">Contact Us</a>\n        </li>\n        <li class=\"nav-item\">\n          <a class=\"nav-link\" href=\"{{ base_url }}/products\">Products</a>\n        </li>\n        <li class=\"nav-item\">\n          <a class=\"nav-link\" href=\"{{ base_url }}/services\">Services</a>\n        </li>\n        <li class=\"nav-item dropdown\">\n          <a class=\"nav-link dropdown-toggle\" href=\"#\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n            About Us\n          </a>\n          <ul class=\"dropdown-menu\">\n            <li><a class=\"dropdown-item\" href=\"{{ base_url }}/register\">Register</a></li>\n            <li><a class=\"dropdown-item\" href=\"#\">The Company</a></li>\n            <li><a class=\"dropdown-item\" href=\"#\">The History</a></li>\n            <li><a class=\"dropdown-item\" href=\"#\">Contact Us</a></li>\n          </ul>\n        </li>\n      </ul>\n    </div>\n  </div>\n</nav>"
       }
     ],
-    "starred": true
+    "starred": false
   },
   {
     "id": "1h5r70vne",
@@ -111,7 +111,7 @@
         "code": "from jinja2 import Environment, FileSystemLoader, select_autoescape\nimport os\n\nBASE_DIR = os.path.dirname(os.path.abspath(__file__))\n\nenv = Environment(\n    loader=FileSystemLoader(os.path.join(BASE_DIR, \"templates\")),\n    autoescape=select_autoescape([\"html\", \"xml\"])\n)\n\n\ndef app(environ, start_response):\n    path = environ.get(\"PATH_INFO\", \"/\")\n\n    students = [\n        {\"ID\": 1, \"Name\": \"Alice Johnson\", \"Course\": \"Computer Science\"},\n        {\"ID\": 2, \"Name\": \"Brian Smith\", \"Course\": \"Information Technology\"},\n        {\"ID\": 3, \"Name\": \"Catherine Lee\", \"Course\": \"Business Administration\"},\n        {\"ID\": 4, \"Name\": \"David Brown\", \"Course\": \"Mechanical Engineering\"},\n        {\"ID\": 5, \"Name\": \"Emma Wilson\", \"Course\": \"Psychology\"},\n        {\"ID\": 6, \"Name\": \"Frank Garcia\", \"Course\": \"Electrical Engineering\"},\n        {\"ID\": 7, \"Name\": \"Grace Martinez\", \"Course\": \"Marketing\"},\n        {\"ID\": 8, \"Name\": \"Henry Anderson\", \"Course\": \"Civil Engineering\"},\n        {\"ID\": 9, \"Name\": \"Isabella Thomas\", \"Course\": \"Biology\"},\n        {\"ID\": 10, \"Name\": \"James Taylor\", \"Course\": \"Accounting\"}\n    ]\n\n    if path.endswith(\"/students\"):\n        title = \"Students List\"\n        message = \"Dynamic Table with Jinja2\"\n    else:\n        title = \"Home\"\n        message = \"Plain Python + Gunicorn + Jinja2\"\n\n    template = env.get_template(\"home.html\")\n    html = template.render(title=title, message=message, students=students)\n\n    start_response(\"200 OK\", [(\"Content-Type\", \"text/html; charset=utf-8\")])\n    return [html.encode(\"utf-8\")]"
       }
     ],
-    "locked": false
+    "locked": true
   },
   {
     "id": "res3oiwu3",
@@ -137,7 +137,7 @@
         "code": "from jinja2 import Environment, FileSystemLoader\nimport os\n\nBASE_DIR = os.path.dirname(os.path.abspath(__file__))\n\nenv = Environment(\n    loader=FileSystemLoader(os.path.join(BASE_DIR, \"templates\")),\n    autoescape=True\n)\n\ndef app(environ, start_response):\n    path = environ.get(\"PATH_INFO\", \"/\")\n\n    if path.endswith(\"/hello\"):\n        title = \"Hello Page\"\n        message = \"Rendered using Jinja2\"\n    else:\n        title = \"Home\"\n        message = \"Plain Python + Gunicorn + Nginx\"\n\n    template = env.get_template(\"home.html\")\n    html = template.render(title=title, message=message)\n\n    start_response(\"200 OK\", [(\"Content-Type\", \"text/html; charset=utf-8\")])\n    return [html.encode(\"utf-8\")]"
       }
     ],
-    "locked": false
+    "locked": true
   },
   {
     "id": "10",
@@ -220,46 +220,6 @@
         "code": "# Example URL (depends on your server setup):\n# http://172.17.100.15:9899/it21_banas/webapps/app1\n\n# Final folder structure:\n# webapps/\n# └── app1/\n#     ├── app.py\n#     └── templates/\n#         └── home.html"
       }
     ],
-    "locked": false
-  },
-  {
-    "id": "88z1e07sw",
-    "title": "migrations",
-    "description": "",
-    "steps": [
-      {
-        "id": "51nfldvld",
-        "heading": "001-add-user-profile-fields.sql",
-        "explanation": "",
-        "code": "-- Migration: Add profile fields to xthread_users\n-- Run this in your Supabase SQL editor when you upload to your main account\n\n-- Add bio column if it doesn't exist\nALTER TABLE xthread_users \nADD COLUMN IF NOT EXISTS bio TEXT DEFAULT NULL;\n\n-- Add avatar_url column if it doesn't exist (may already exist)\nALTER TABLE xthread_users \nADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT NULL;\n\n-- Add display_name column if it doesn't exist (may already exist)\nALTER TABLE xthread_users \nADD COLUMN IF NOT EXISTS display_name TEXT DEFAULT NULL;\n\n-- Add role column for admin/vip badges\nALTER TABLE xthread_users \nADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user' CHECK (role IN ('user', 'admin', 'vip', 'moderator'));\n\n-- Set xalhexi as admin (run after the user exists)\n-- UPDATE xthread_users SET role = 'admin' WHERE username = 'xalhexi';\n\n-- Add updated_at column\nALTER TABLE xthread_users \nADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();\n\n-- Create function to update updated_at\nCREATE OR REPLACE FUNCTION update_updated_at_column()\nRETURNS TRIGGER AS $$\nBEGIN\n    NEW.updated_at = NOW();\n    RETURN NEW;\nEND;\n$$ language 'plpgsql';\n\n-- Create trigger for updated_at\nDROP TRIGGER IF EXISTS update_xthread_users_updated_at ON xthread_users;\nCREATE TRIGGER update_xthread_users_updated_at\n    BEFORE UPDATE ON xthread_users\n    FOR EACH ROW\n    EXECUTE FUNCTION update_updated_at_column();"
-      },
-      {
-        "id": "ak1vt1l4j",
-        "heading": "002-add-badges-system.sql",
-        "explanation": "",
-        "code": "-- Migration: Add badges system\n-- Run this in your Supabase SQL editor when you upload to your main account\n\n-- Create badges table\nCREATE TABLE IF NOT EXISTS xthread_badges (\n    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,\n    name TEXT NOT NULL UNIQUE,\n    description TEXT,\n    icon TEXT, -- icon name or URL\n    color TEXT DEFAULT '#6366f1', -- badge color\n    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n);\n\n-- Create user_badges junction table\nCREATE TABLE IF NOT EXISTS xthread_user_badges (\n    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,\n    user_id UUID NOT NULL REFERENCES xthread_users(id) ON DELETE CASCADE,\n    badge_id UUID NOT NULL REFERENCES xthread_badges(id) ON DELETE CASCADE,\n    awarded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),\n    awarded_by UUID REFERENCES xthread_users(id), -- admin who awarded it\n    UNIQUE(user_id, badge_id)\n);\n\n-- Insert default badges\nINSERT INTO xthread_badges (name, description, icon, color) VALUES\n    ('Admin', 'Site Administrator', 'shield', '#ef4444'),\n    ('VIP', 'VIP Member', 'crown', '#f59e0b'),\n    ('Moderator', 'Community Moderator', 'badge-check', '#8b5cf6'),\n    ('Early Adopter', 'Joined during early access', 'star', '#06b6d4'),\n    ('Top Contributor', 'Made significant contributions', 'trophy', '#10b981'),\n    ('Helpful', 'Known for helpful responses', 'heart', '#ec4899'),\n    ('Code Master', 'Shared quality code snippets', 'code', '#3b82f6')\nON CONFLICT (name) DO NOTHING;\n\n-- Create index for faster badge lookups\nCREATE INDEX IF NOT EXISTS idx_user_badges_user_id ON xthread_user_badges(user_id);\nCREATE INDEX IF NOT EXISTS idx_user_badges_badge_id ON xthread_user_badges(badge_id);"
-      },
-      {
-        "id": "7jdt3j3wr",
-        "heading": "003-set-xalhexi-admin.sql",
-        "explanation": "",
-        "code": "-- Migration: Set xalhexi as Admin\n-- Run this AFTER the xalhexi user has registered\n\n-- Set xalhexi as admin\nUPDATE xthread_users \nSET role = 'admin' \nWHERE username = 'xalhexi';\n\n-- Award Admin badge to xalhexi\nINSERT INTO xthread_user_badges (user_id, badge_id)\nSELECT u.id, b.id \nFROM xthread_users u, xthread_badges b \nWHERE u.username = 'xalhexi' AND b.name = 'Admin'\nON CONFLICT (user_id, badge_id) DO NOTHING;"
-      },
-      {
-        "id": "mlhm1jxcw",
-        "heading": "004-add-vip-features.sql",
-        "explanation": "",
-        "code": "-- Migration: Add VIP features to posts\n-- Run this in your Supabase SQL editor\n\n-- Add vip_only column to posts (only VIP/Admin users can see VIP-only posts)\nALTER TABLE xthread_posts \nADD COLUMN IF NOT EXISTS is_vip_only BOOLEAN DEFAULT FALSE;\n\n-- Add comments_enabled column to posts (allows users to disable comments)\nALTER TABLE xthread_posts \nADD COLUMN IF NOT EXISTS comments_enabled BOOLEAN DEFAULT TRUE;\n\n-- Index for filtering VIP posts\nCREATE INDEX IF NOT EXISTS idx_xthread_posts_is_vip_only ON xthread_posts(is_vip_only);\n\n-- Update RLS policies if using Supabase RLS\n-- VIP posts are visible to users with role 'vip' or 'admin'\n-- Regular users only see posts where is_vip_only = false\n\n-- Example RLS policy (modify based on your existing policies):\n-- CREATE POLICY \"VIP posts visible to VIP/Admin users\"\n-- ON xthread_posts FOR SELECT\n-- USING (\n--   is_vip_only = false \n--   OR (\n--     auth.uid() IN (\n--       SELECT id FROM xthread_users WHERE role IN ('vip', 'admin')\n--     )\n--   )\n-- );"
-      },
-      {
-        "id": "a21y7b97e",
-        "heading": "README.md",
-        "explanation": "",
-        "code": "# Database Migrations\n\nRun these SQL scripts in your Supabase SQL Editor in order:\n\n## Migration Order\n\n1. **001-add-user-profile-fields.sql** - Adds bio, avatar_url, display_name, and role columns to users table\n2. **002-add-badges-system.sql** - Creates badges tables and default badges\n3. **003-set-xalhexi-admin.sql** - Sets xalhexi user as Admin (run after xalhexi registers)\n4. **004-add-vip-features.sql** - Adds VIP-only posts and comments toggle\n\n## How to Run\n\n1. Go to your Supabase Dashboard\n2. Click on \"SQL Editor\"\n3. Copy and paste each script in order\n4. Click \"Run\"\n\n## What Each Migration Does\n\n### 001-add-user-profile-fields.sql\n- Adds `bio` column for user bio/description\n- Adds `role` column (user, admin, vip, moderator)\n- Adds `updated_at` column with auto-update trigger\n\n### 002-add-badges-system.sql\n- Creates `xthread_badges` table for badge definitions\n- Creates `xthread_user_badges` junction table\n- Inserts default badges: Admin, VIP, Moderator, Early Adopter, Top Contributor, Helpful, Code Master\n\n### 003-set-xalhexi-admin.sql\n- Sets xalhexi user role to 'admin'\n- Awards Admin badge to xalhexi\n- **Run this AFTER xalhexi has registered an account**\n\n### 004-add-vip-features.sql\n- Adds `is_vip_only` column to posts (VIP-only visibility)\n- Adds `comments_enabled` column to posts (toggle comments on/off)"
-      }
-    ],
-    "vipOnly": false,
-    "starred": true,
     "locked": true
   },
   {
@@ -317,22 +277,6 @@
       }
     ],
     "locked": false
-  },
-  {
-    "id": "0lipmpmpz",
-    "title": "# notes",
-    "description": "note",
-    "steps": [
-      {
-        "id": "4mxmpyjk0",
-        "heading": "1",
-        "explanation": "1",
-        "code": "# 1. UIs/buttons: is white mode.\n# 2. change login from email to username or email.\n# 3. able to create visit peoples profile, see their bio, able to upload photo/change as well. like a fb or any forum that has profile and timeline\n# 4 profile link gonna be like: /thread/username\n# Example: xalhexi.wtf/thread/{username}\n# 5. improve the timeline/should similar to threads like code snippet. \n# replace name to Thread to Threads? \n# allow to upload photos, through upload or ctrl + v screenshots (same as in Tutorials implement there too.)\n# 6 add badge: make xalhexi username as Admin\n# 7 add badges reward? (idk how but just make one automation, idk what to reward but just think of any relevant for this site(Threads Tab)\n# 8 in comment: allow to paste code and it automatically detect and it will look like code snippet without clicking \"add code\" do the same as in creating post like auto detect code. add code will be just optional now.\n# 9 make Admin able to: delete post, delete comment, delete account/ban acount\n# 10 make uploader to edit post/delete post, delete comment (only if it's their thread/post)\n# 11 in comment there will be badge tho like Author or if Admin commented should show admin, implement reply within that comment as well like in tiktok, that it can thread in reply(?) like it shows who you reply to as well.\n# 12 add VIP badge & forum channel - admin can select user to pick who will be vip and can remove as well.\n# 13 Forum channel for VIP will be just the same excep, vip can read VIPs post and can select if it's gonna be VIP only viwer on not.\n# 14 allow uploader to turn off comments.\n# 15 in Tutorials, when new changes applied then when u click changes, if it's too long line it doesnt cover the whole line only whatever is in preview that shown but when you slide scroll to left the highlight cut off.\n# 16 in threads, instead of voting system, just do: Heart more heart = most popular. and the it should not be on left(or whereever the current positions of voting, instead it should be where like before the comment, put love or heart as well in comment and indicator like how many hearts"
-      }
-    ],
-    "starred": true,
-    "vipOnly": false,
-    "locked": true
   },
   {
     "id": "348b9lrsw",
@@ -416,150 +360,6 @@
     "locked": true
   },
   {
-    "id": "1",
-    "title": "Getting Started with Git",
-    "description": "Learn the basics of version control with Git",
-    "steps": [
-      {
-        "id": "1-1",
-        "heading": "Initialize a Repository",
-        "explanation": "Create a new Git repository in your project folder.",
-        "code": "git init"
-      },
-      {
-        "id": "1-2",
-        "heading": "Check Status",
-        "explanation": "See which files have been modified or staged.",
-        "code": "git status"
-      },
-      {
-        "id": "1-3",
-        "heading": "Stage Changes",
-        "explanation": "Add files to staging area before committing.",
-        "code": "git add ."
-      },
-      {
-        "id": "1-4",
-        "heading": "Commit Changes",
-        "explanation": "Save your staged changes with a descriptive message.",
-        "code": "git commit -m \"Your message\""
-      }
-    ],
-    "locked": true
-  },
-  {
-    "id": "4",
-    "title": "SSH + GitHub SSH Setup (ed25519)",
-    "description": "Complete guide to SSH into server, generate ed25519 keys, configure GitHub SSH with Port 443, and set up Git",
-    "steps": [
-      {
-        "id": "4-1",
-        "heading": "Connect to the Server",
-        "explanation": "Open Terminal and SSH into your school server. When prompted, type 'yes' if asked to continue connecting, then enter your password.",
-        "code": "ssh it21_lastname@172.17.100.15 -p 9898"
-      },
-      {
-        "id": "4-2",
-        "heading": "Switch to Bash (Optional)",
-        "explanation": "Switch to bash shell for better compatibility. This step is optional but recommended.",
-        "code": "bash"
-      },
-      {
-        "id": "4-3",
-        "heading": "Create .ssh Folder",
-        "explanation": "Create the .ssh directory if it doesn't exist and navigate into it. You can verify your location with pwd.",
-        "code": "mkdir -p ~/.ssh\ncd ~/.ssh\n\n# Optional: verify directory\npwd"
-      },
-      {
-        "id": "4-4",
-        "heading": "Generate SSH Key (ed25519)",
-        "explanation": "Generate a new SSH key using the ed25519 algorithm. Press Enter for default file location, and Enter again for no passphrase (or set one if you prefer).",
-        "code": "ssh-keygen -t ed25519 -C \"your_email@example.com\""
-      },
-      {
-        "id": "4-5",
-        "heading": "Show and Copy Public Key",
-        "explanation": "Display your public key and copy the entire output (starts with 'ssh-ed25519'). You'll need this for GitHub.",
-        "code": "cat ~/.ssh/id_ed25519.pub"
-      },
-      {
-        "id": "4-6",
-        "heading": "Add Public Key to GitHub",
-        "explanation": "On GitHub: Go to Settings > SSH and GPG keys > New SSH key. Give it a title like 'School Server Key', paste your public key, and click 'Add SSH key'.",
-        "code": "# No terminal command needed\n# 1. Go to GitHub Settings\n# 2. Click 'SSH and GPG keys'\n# 3. Click 'New SSH key'\n# 4. Title: School Server Key\n# 5. Paste your public key\n# 6. Click 'Add SSH key'"
-      },
-      {
-        "id": "4-7",
-        "heading": "Configure SSH for Port 443",
-        "explanation": "Create/edit the SSH config file to force GitHub SSH connections through Port 443. This bypasses firewall restrictions. Use Ctrl+O then Enter to save, and Ctrl+X to exit nano.",
-        "code": "nano ~/.ssh/config\n\n# Paste this content:\nHost github.com\n  HostName ssh.github.com\n  User git\n  Port 443\n  IdentityFile ~/.ssh/id_ed25519"
-      },
-      {
-        "id": "4-8",
-        "heading": "Fix SSH Permissions",
-        "explanation": "Set the correct permissions for your SSH files. This is important for security and proper SSH operation.",
-        "code": "chmod 700 ~/.ssh\nchmod 600 ~/.ssh/config\nchmod 600 ~/.ssh/id_ed25519\nchmod 644 ~/.ssh/id_ed25519.pub"
-      },
-      {
-        "id": "4-9",
-        "heading": "Set Git Global Config",
-        "explanation": "Configure Git with your name and email so your commits are properly attributed. Optionally set 'main' as your default branch.",
-        "code": "git config --global user.name \"Your Full Name\"\ngit config --global user.email \"your_email@example.com\"\n\n# Optional: set default branch to main\ngit config --global init.defaultBranch main\n\n# Optional: verify your config\ngit config --global --list"
-      },
-      {
-        "id": "4-10",
-        "heading": "Verify GitHub SSH Connection",
-        "explanation": "Test your SSH connection to GitHub. If successful, you'll see a message like 'Hi USERNAME! You've successfully authenticated...' Type 'yes' if asked to trust the host.",
-        "code": "ssh -T git@github.com"
-      },
-      {
-        "id": "4-11",
-        "heading": "Return Home and Exit",
-        "explanation": "Navigate back to your home directory and exit the server when you're done. Remember: never share your private key (id_ed25519), only share the public key (id_ed25519.pub).",
-        "code": "cd ~\npwd  # Optional: confirm location\n\n# When done, exit the server\nexit"
-      }
-    ],
-    "locked": false
-  },
-  {
-    "id": "6",
-    "title": "Clone Existing Repo from GitHub",
-    "description": "How to clone an existing repository and start working on it",
-    "steps": [
-      {
-        "id": "6-1",
-        "heading": "Navigate to Projects Folder",
-        "explanation": "Go to the folder where you want the repo to be downloaded. Create a projects folder if needed.",
-        "code": "# Go to home directory\ncd ~\n\n# Or create a projects folder\nmkdir -p ~/projects\ncd ~/projects"
-      },
-      {
-        "id": "6-2",
-        "heading": "Clone the Repository",
-        "explanation": "Copy the SSH link from GitHub and clone the repo. This creates a folder with the repo name.",
-        "code": "# Clone using SSH (recommended)\ngit clone git@github.com:USERNAME/REPO_NAME.git\n\n# Example:\ngit clone git@github.com:octocat/Hello-World.git"
-      },
-      {
-        "id": "6-3",
-        "heading": "Enter & Verify",
-        "explanation": "Enter the cloned repo folder and verify the remote and branch.",
-        "code": "cd REPO_NAME\n\n# Check remote\ngit remote -v\n\n# Check branch\ngit branch"
-      },
-      {
-        "id": "6-4",
-        "heading": "Make Changes & Push",
-        "explanation": "Create or edit files, then stage, commit, and push your changes.",
-        "code": "# Create/edit a file\nnano notes.txt\n\n# Stage, commit, push\ngit add .\ngit commit -m \"Add notes\"\ngit push"
-      },
-      {
-        "id": "6-5",
-        "heading": "Useful Commands",
-        "explanation": "Handy commands for checking history, changes, and syncing with remote.",
-        "code": "# Check commit history\ngit log --oneline\n\n# See file changes\ngit diff\n\n# Pull latest updates\ngit pull\n\n# Check current branch\ngit branch"
-      }
-    ],
-    "locked": true
-  },
-  {
     "id": "7",
     "title": "Ubuntu: Rename & Move Files",
     "description": "How to rename files and move them between folders in Ubuntu",
@@ -598,162 +398,6 @@
     "locked": true
   },
   {
-    "id": "8",
-    "title": "Check GitHub Repo Contributors",
-    "description": "Three ways to check contributors of a GitHub repository",
-    "steps": [
-      {
-        "id": "8-1",
-        "heading": "GitHub Web (Easiest)",
-        "explanation": "The simplest way - use the GitHub website to view contributors.",
-        "code": "# No terminal needed\n# On the repo page:\n# 1. Click 'Insights' tab\n# 2. Click 'Contributors' in sidebar"
-      },
-      {
-        "id": "8-2",
-        "heading": "Using Git Log",
-        "explanation": "Use git shortlog to see contributors and their commit counts. Works without GitHub CLI.",
-        "code": "# Inside the repo folder:\ngit shortlog -s -n\n\n# -s = show commit counts only\n# -n = sort by number of commits\n\n# Show names + emails:\ngit shortlog -sne"
-      },
-      {
-        "id": "8-3",
-        "heading": "Install GitHub CLI",
-        "explanation": "Install the GitHub CLI (gh) if not already installed, then login.",
-        "code": "# Check if installed\ngh --version\n\n# Install on Ubuntu\nsudo apt update\nsudo apt install gh -y\n\n# Login to GitHub\ngh auth login"
-      },
-      {
-        "id": "8-4",
-        "heading": "Using GitHub CLI",
-        "explanation": "Use gh api to fetch contributor data. Works for public repos or repos you have access to.",
-        "code": "# Get contributors\ngh api repos/OWNER/REPO/contributors\n\n# Show only usernames\ngh api repos/OWNER/REPO/contributors --jq '.[].login'\n\n# Show username + contributions\ngh api repos/OWNER/REPO/contributors --jq '.[] | \"\\(.login) - \\(.contributions)\"'"
-      },
-      {
-        "id": "8-5",
-        "heading": "Quick Tip for Screenshots",
-        "explanation": "If you need screenshot proof for a teacher, this command clearly shows contributors with commit counts.",
-        "code": "git shortlog -sne"
-      }
-    ],
-    "locked": true
-  },
-  {
-    "id": "9",
-    "title": "Common Git Errors & Fixes",
-    "description": "Quick fixes for common Git errors you might encounter",
-    "steps": [
-      {
-        "id": "9-1",
-        "heading": "Permission Denied (publickey)",
-        "explanation": "This error means your SSH key is not set up or not added to GitHub.",
-        "code": "# Test SSH connection\nssh -T git@github.com\n\n# If it fails, check your SSH key setup\n# Refer to the SSH + GitHub Setup tutorial"
-      },
-      {
-        "id": "9-2",
-        "heading": "Remote Origin Already Exists",
-        "explanation": "Remove the existing remote and add it again with the correct URL.",
-        "code": "# Remove existing remote\ngit remote remove origin\n\n# Add new remote\ngit remote add origin git@github.com:USERNAME/REPO_NAME.git"
-      },
-      {
-        "id": "9-3",
-        "heading": "Branch is Master Instead of Main",
-        "explanation": "Rename your local branch to main and push to the main branch.",
-        "code": "# Rename branch to main\ngit branch -M main\n\n# Push to main\ngit push -u origin main"
-      }
-    ],
-    "locked": true
-  },
-  {
-    "id": "terminal-setup",
-    "title": "Setting Up Web Terminal (Admin)",
-    "description": "How to install and configure ttyd for web-based terminal access",
-    "locked": true,
-    "steps": [
-      {
-        "id": "ts-1",
-        "heading": "Install ttyd on your VPS",
-        "explanation": "SSH into your VPS and install ttyd. This tool exposes a terminal session as a web page.",
-        "code": "# Ubuntu/Debian\nsudo apt update\nsudo apt install ttyd\n\n# Check version\nttyd --version"
-      },
-      {
-        "id": "ts-2",
-        "heading": "Kill existing ttyd process (if running)",
-        "explanation": "Before starting ttyd, make sure no other instance is using the port.",
-        "code": "# Kill any running ttyd\npkill ttyd\n\n# Or find and kill manually\nps aux | grep ttyd\nkill <PID>"
-      },
-      {
-        "id": "ts-3",
-        "heading": "Generate SSL Certificate (REQUIRED for HTTPS sites)",
-        "explanation": "Vercel uses HTTPS. Browsers block HTTP iframes in HTTPS pages. You MUST use SSL for embedding to work.",
-        "code": "# Generate self-signed certificate\nopenssl req -x509 -nodes -days 365 -newkey rsa:2048 \\\n  -keyout /root/ttyd-key.pem \\\n  -out /root/ttyd-cert.pem \\\n  -subj '/CN=localhost'\n\n# Or use Let's Encrypt for a real domain (recommended)"
-      },
-      {
-        "id": "ts-4",
-        "heading": "Run ttyd with SSL",
-        "explanation": "Start ttyd with SSL enabled and the -O flag to allow iframe embedding.",
-        "code": "# Run with SSL (REQUIRED for Vercel embedding)\nttyd -W -p 7681 -O \\\n  --ssl \\\n  --ssl-cert /root/ttyd-cert.pem \\\n  --ssl-key /root/ttyd-key.pem \\\n  bash\n\n# Run in background\nnohup ttyd -W -p 7681 -O --ssl --ssl-cert /root/ttyd-cert.pem --ssl-key /root/ttyd-key.pem bash &"
-      },
-      {
-        "id": "ts-5",
-        "heading": "With Authentication (Recommended)",
-        "explanation": "Add username/password protection to prevent unauthorized access.",
-        "code": "# With SSL + authentication\nttyd -W -p 7681 -O \\\n  --ssl \\\n  --ssl-cert /root/ttyd-cert.pem \\\n  --ssl-key /root/ttyd-key.pem \\\n  -c student:practice123 \\\n  bash"
-      },
-      {
-        "id": "ts-6",
-        "heading": "Configure Firewall",
-        "explanation": "Open the port on your VPS firewall.",
-        "code": "# UFW (Ubuntu)\nsudo ufw allow 7681\n\n# Or iptables\nsudo iptables -A INPUT -p tcp --dport 7681 -j ACCEPT"
-      },
-      {
-        "id": "ts-7",
-        "heading": "Test and Get Your URL",
-        "explanation": "First visit the URL directly in browser and accept the self-signed certificate warning. Then use this HTTPS URL in admin Terminal Settings.",
-        "code": "# Your terminal URL (MUST be HTTPS):\nhttps://YOUR_VPS_IP:7681\n\n# Example:\nhttps://104.64.209.151:7681\n\n# IMPORTANT: Visit this URL in browser first\n# and click 'Advanced' -> 'Proceed' to accept\n# the self-signed certificate!"
-      }
-    ]
-  },
-  {
-    "id": "01jlgqplg",
-    "title": "prompt",
-    "description": "test",
-    "steps": [
-      {
-        "id": "285ddvljg",
-        "heading": "PROMPT11",
-        "explanation": "",
-        "code": "**PROMPT 1 (Desktop “WOW tutorial hub” — closest to the image I sent):**\nCreate a high-resolution 2D UI mockup (clean, modern, premium SaaS style) of an educational website called “ITP Subject Tutorial.” Show a desktop web app layout with a sticky top navigation bar and a left sidebar. Use a dark navy/blue header with subtle gradient, soft glow accents, rounded corners (16–20px), and gentle shadows. Top header elements (left to right): site title “ITP Subject Tutorial”, a centered search input with placeholder “Search tutorials…”, a small “Report Issue” button/link, a “Dark Mode” toggle icon, and a circular user avatar icon. Under the header, show a thin horizontal scroll progress bar that is partially filled. Left sidebar: grouped sections with headings and chevrons, each group separated by subtle dividers. Sidebar groups: “Git” with items “Git Basics”, “Git Branching” (active/selected), “GitHub Setup”, “Common Git Errors”; “SSH & GitHub” with items “SSH Keys”, “GitHub SSH Access”; “Linux Commands” with items “Ubuntu Commands”, “File Permissions”; “Web Apps” with item “Python Web App”. At the bottom of sidebar add “Quick Links” with items “ITP GitHub” and “Class Resources.” The main content area: show breadcrumb near top “Git / Git Branching”. Large tutorial title: “Git Branching Basics”. Under the title show small pill tags: “Beginner”, “10 mins”, “Git Guide”. Below, a short description sentence: “Learn how to create and manage branches in Git.” Then show stacked step cards (accordion style but expanded) with numbers and titles: “1. Create a New Branch”, “2. Switch to Your Branch”, “3. Merge Branches” (third one partially visible). Each step card has a brief explanation line and a code block container. Code block has a small label “Terminal” on the left and a “Copy” button on the right. Code examples: `git branch <branch-name>` and `git checkout <branch-name>`. On the right side of the main content area, show a slim info panel with heading “On This Page” and checklist items “Create Branch”, “Checkout Branch”, “Merge Branches”; below it a panel titled “Expected Output” showing: “Switched to branch ‘feature-x’.” and another panel titled “Common Issues” with a bullet: “Error: Not a valid object name” and subtext “Branch name typo”. Bottom navigation: left button “Previous” and right button “Next Tutorial →”. Add a subtle abstract wave/gradient background at the bottom of the page (soft pastel blues/purples) and tiny particles for depth, but keep the UI readable. Use crisp typography, consistent spacing grid, and no real brand logos.\n**SENTENCE:** Use this to generate a polished desktop UI screenshot mockup that matches the structure, labels, and vibe of the image.\n\n---\n\n**PROMPT 2 (Same layout, but with “scroll reveal” vibe frozen in one frame):**\nDesign a high-resolution 2D UI mockup of the “ITP Subject Tutorial” web app in a premium modern style. Show the same header, sidebar, breadcrumb, title, tags, step cards, right info panels, and bottom navigation as a tutorial hub. Add subtle “motion cues” as static design elements: the active sidebar item “Git Branching” has a glowing pill highlight and a thin left accent bar; the step cards appear with faint drop shadows and slight upward offset shadows (as if they just slid into view). Add a subtle highlight ring around Step 2 to imply it is currently in focus. Include a thin top progress bar that is around 35–45% filled. Keep colors clean: navy header, light main surface, soft gradients in accents. Make it look like a beautiful product screenshot (Dribbble style), sharp text, no blur.\n**SENTENCE:** Use this when you want the page to *feel animated* even though it’s a still image.\n\n---\n\n**PROMPT 3 (Click interaction moment — “Copy” success state):**\nCreate a premium 2D UI mockup of the “ITP Subject Tutorial” page for “Git Branching Basics” (same layout: top header, left sidebar, main content with step cards, right info panels). Focus on the micro-interaction: show the “Copy” button on Step 1 in its clicked success state. The button label should read “Copied ✓” with a subtle green/teal confirmation accent, and the code block border should have a brief glowing outline to indicate success. Add a small toast notification in the top-right of the content area: “Copied to clipboard” with a check icon. Keep everything clean and minimal, with rounded corners, soft shadows, and consistent spacing.\n**SENTENCE:** Use this to visualize the satisfying “Copied!” feedback moment.\n\n---\n\n**PROMPT 4 (Accordion interaction — Step 2 expands smoothly):**\nGenerate a high-resolution 2D UI mockup of “ITP Subject Tutorial” where Step 2 is expanded and Step 1 is collapsed in accordion style. Same sidebar groups and header elements. Step 1 shows only its title row and a small chevron icon pointing down; Step 2 shows full content: explanation text + code block with “Terminal” label + “Copy” button; Step 3 is collapsed. Add subtle divider lines and gentle shadows. Make the expanded card feel “active” with slightly stronger shadow and a thin accent border.\n**SENTENCE:** Use this to preview how your step cards look when users expand/collapse them.\n\n---\n\n**PROMPT 5 (Sidebar + scrollspy emphasis):**\nDesign a sleek educational web app mockup titled “ITP Subject Tutorial.” Keep the same structure, but emphasize scrollspy: the sidebar highlights “Git Branching” as active, and within the right “On This Page” panel, the item “Checkout Branch” is highlighted as the current section (slightly darker background pill). Show Step 2 visually emphasized as the active step. Add a subtle vertical progress indicator in the “On This Page” list to imply reading progress. Maintain a premium minimal style with rounded corners and soft shadows.\n**SENTENCE:** Use this to visualize the “it follows me as I scroll” navigation feel.\n\n---\n\n**PROMPT 6 (Mobile version — drawer sidebar + sticky actions):**\nCreate a high-resolution mobile UI mockup (phone screen) of “ITP Subject Tutorial.” Use a sticky top bar with the title and a search icon, plus a hamburger menu icon that opens a left drawer. Show the drawer open with the same grouped sidebar items: Git, SSH & GitHub, Linux Commands, Web Apps, Quick Links. Main content shows “Git Branching Basics” with tags (Beginner, 10 mins), and Step cards stacked vertically with code blocks and Copy buttons. Add a bottom sticky action bar with “Previous” and “Next” buttons. Clean modern style, rounded cards, readable typography, no clutter.\n**SENTENCE:** Use this to preview how the same tutorial experience looks on mobile.\n\n---\n\n**PROMPT 7 (Dark mode “WOW” theme):**\nGenerate a premium dark-mode 2D UI mockup of the “ITP Subject Tutorial” page. Keep the exact same structure and text (header, sidebar groups, breadcrumb, “Git Branching Basics,” tags, step cards, right panels, bottom nav). Use dark charcoal surfaces with slightly lighter cards, neon-soft accent glows (blue/purple) for active states, and high contrast for code blocks. Copy buttons should be clear and accessible. Add a subtle animated-look gradient accent behind the header (but as a static image).\n**SENTENCE:** Use this to visualize the “smooth hypnotic” dark-mode version.\n\n---\n\n**PROMPT 8 (Storyboards — 4 panels showing the WOW moments):**\nCreate a 4-panel storyboard image (clean 2D UI mockups) showing the “ITP Subject Tutorial” website interactions. Panel 1: full desktop layout of “Git Branching Basics” with sidebar, header search, and step cards. Panel 2: mid-scroll state where Step 2 is in focus, sidebar scrollspy highlight updates, top progress bar is around 45%. Panel 3: user clicks Copy on a code block; show “Copied ✓” button state and a small toast “Copied to clipboard”. Panel 4: mobile view with hamburger drawer open and the same categories visible. Keep consistent branding (navy/blue accents, rounded corners, soft shadows), crisp text, no external logos.\n**SENTENCE:** Use this to “see the animation” as a before/after set even in one image.\n\n---\n\n**PROMPT 9 (Ultra-premium “Apple-like smooth” minimal variant):**\nDesign a super minimal, ultra-clean 2D UI mockup of “ITP Subject Tutorial” with lots of white space, thin dividers, subtle shadows, and restrained accents. Keep the same content and layout but simplify: smaller sidebar icons, soft gray surfaces, one accent color for active states, elegant typography. Code blocks look like refined developer docs with a top strip label “Terminal” and a compact Copy icon button. Right side panels are light and airy.\n**SENTENCE:** Use this if you want a calmer, more “expensive documentation” look.\n\n---\n\n**PROMPT 10 (Component sheet — so you can implement consistently):**\nCreate a UI component sheet for “ITP Subject Tutorial” in a premium modern style. Show separate components on one canvas: top header bar with search field, sidebar group with active and inactive items, step card (collapsed + expanded), code block with Copy button (default + copied state), right panel card (“On This Page”), toast notification, primary/secondary buttons (“Previous”, “Next Tutorial”), tag pills (“Beginner”, “10 mins”). Keep consistent spacing, rounded corners, soft shadows, and a navy/blue accent palette.\n**SENTENCE:** Use this to visualize the whole design system before you code anything.\n\n---\n\nIf you want, tell me what image generator you’re using (ChatGPT image / Midjourney / Leonardo / etc.) and I’ll rewrite these prompts in the **best exact format** for that tool (some prefer short + parameter style, some prefer long descriptive)."
-      }
-    ],
-    "locked": true
-  },
-  {
-    "id": "eizjbl7ga",
-    "title": "Vrbtb",
-    "description": "",
-    "steps": [
-      {
-        "id": "m2pxda8ta",
-        "heading": "Root",
-        "explanation": "",
-        "code": "cd ~"
-      }
-    ],
-    "locked": true
-  },
-  {
-    "id": "u9koe47sb",
-    "title": "dan",
-    "description": "das",
-    "steps": [
-      {
-        "id": "ht9vu700n",
-        "heading": "web",
-        "explanation": "",
-        "code": "https://github.com/danielleacierda-cyber/webapps/tree/main/app4"
-      }
-    ],
-    "locked": true
-  },
-  {
     "id": "vb9yo7l7p",
     "title": "ubuntu",
     "description": "",
@@ -765,7 +409,218 @@
         "code": "cd /var/www/reviactyl\nyarn build\nsudo -u www-data php artisan optimize:clear\nsystemctl restart nginx"
       }
     ],
-    "starred": true,
+    "starred": false,
+    "vipOnly": true,
+    "locked": true
+  },
+  {
+    "id": "vps-wings-cookiehosting",
+    "title": "VPS NEW NODE FOR WINGS PTERODACTYL",
+    "description": "",
+    "locked": false,
+    "steps": [
+      {
+        "id": "vpsw-1",
+        "heading": "Panel / Node Info",
+        "explanation": "",
+        "code": "* **Panel**: `https://panel.cookie-hosting.com`\n* **Node VPS IP**: `172.236.253.112`\n* **Node domain**: `usa-01.cookie-hosting.com`\n* **Wings API**: `127.0.0.1:8080`\n* **Nginx reverse proxy**: `80/443 -> 127.0.0.1:8080`\n* **SFTP**: `2022`"
+      },
+      {
+        "id": "vpsw-2",
+        "heading": "1) Cloudflare / DNS",
+        "explanation": "Create an **A record**. Important:\n\n* Use **DNS only**, not proxied.\n* Wait until DNS resolves.",
+        "code": "Type: A\nName: usa-01\nContent: 172.236.253.112\nProxy status: DNS only\n\nping usa-01.cookie-hosting.com"
+      },
+      {
+        "id": "vpsw-3",
+        "heading": "2) Connect to the node VPS",
+        "explanation": "",
+        "code": "ssh root@172.236.253.112"
+      },
+      {
+        "id": "vpsw-4",
+        "heading": "3) Install Docker, Wings dependencies, Nginx, Certbot",
+        "explanation": "Paste this on the **node VPS**:",
+        "code": "apt update && apt upgrade -y\n\napt install -y curl wget tar unzip git ufw sudo ca-certificates gnupg lsb-release nginx certbot python3-certbot-nginx\n\nmkdir -p /etc/apt/keyrings\ncurl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg\nchmod a+r /etc/apt/keyrings/docker.gpg\n\necho \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \\\"$VERSION_CODENAME\\\") stable\" > /etc/apt/sources.list.d/docker.list\n\napt update\napt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin\n\nsystemctl enable --now docker\nsystemctl enable --now nginx\n\ncurl -L -o /usr/local/bin/wings https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_amd64\nchmod +x /usr/local/bin/wings\n\nmkdir -p /etc/pterodactyl\nmkdir -p /var/lib/pterodactyl\nmkdir -p /var/log/pterodactyl\n\nufw allow 22/tcp\nufw allow 80/tcp\nufw allow 443/tcp\nufw allow 8080/tcp\nufw allow 2022/tcp\nufw --force enable"
+      },
+      {
+        "id": "vpsw-5",
+        "heading": "4) Create the node in panel first",
+        "explanation": "Go to:\n\n`Admin -> Nodes -> Create New`\n\nImportant:\n\n* **Do not use port 443 here**\n* Keep **Daemon Port = 8080**\n* Even with SSL enabled in panel, nginx will proxy `443 -> 8080`\n\nSave it.",
+        "code": "Node Name: USA-01\nLocation: your chosen location\nFQDN: usa-01.cookie-hosting.com\nCommunicate Over SSL: Yes\nBehind Proxy: No\nDaemon Port: 8080\nDaemon SFTP Port: 2022\nDaemon Base Directory: /var/lib/pterodactyl"
+      },
+      {
+        "id": "vpsw-6",
+        "heading": "5) Add allocation in panel",
+        "explanation": "Inside the node:",
+        "code": "Allocations -> Create New\n\nIP Address: 172.236.253.112\nPorts: 25565-25575"
+      },
+      {
+        "id": "vpsw-7",
+        "heading": "6) Get the node config from panel",
+        "explanation": "In the node page:\n\n`Configuration`\n\nCopy the generated config.\n\nThen on the **node VPS**:\n\nPaste it.\n\nThen make sure these parts are correct:\n\nImportant:\n\n* `remote` must be your real panel URL with **https**\n* `api.ssl.enabled` must stay **false** because nginx handles SSL\n* `cert` and `key` can be blank or removed if SSL is false\n\nA working shape looks like this:",
+        "code": "nano /etc/pterodactyl/config.yml\n\napi:\n  host: 0.0.0.0\n  port: 8080\n  ssl:\n    enabled: false\n\nremote: https://panel.cookie-hosting.com"
+      },
+      {
+        "id": "vpsw-8",
+        "heading": "7) Create Wings systemd service",
+        "explanation": "On the **node VPS**:",
+        "code": "cat >/etc/systemd/system/wings.service <<'EOF'\n[Unit]\nDescription=Wings Daemon\nAfter=docker.service\nRequires=docker.service\n\n[Service]\nUser=root\nWorkingDirectory=/etc/pterodactyl\nLimitNOFILE=4096\nPIDFile=/run/wings/daemon.pid\nExecStart=/usr/local/bin/wings\nRestart=on-failure\nStartLimitInterval=180\nStartLimitBurst=30\nRestartSec=5s\n\n[Install]\nWantedBy=multi-user.target\nEOF\n\nsystemctl daemon-reload\nsystemctl enable --now wings"
+      },
+      {
+        "id": "vpsw-9",
+        "heading": "8) Create nginx reverse proxy for Wings",
+        "explanation": "On the **node VPS**:",
+        "code": "cat >/etc/nginx/sites-available/wings <<'EOF'\nserver {\n    listen 80;\n    server_name usa-01.cookie-hosting.com;\n\n    location / {\n        proxy_pass http://127.0.0.1:8080;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}\nEOF\n\nln -sf /etc/nginx/sites-available/wings /etc/nginx/sites-enabled/wings\nnginx -t\nsystemctl reload nginx"
+      },
+      {
+        "id": "vpsw-10",
+        "heading": "9) Issue SSL certificate",
+        "explanation": "On the **node VPS**:\n\nChoose redirect to HTTPS if asked.\n\nIf certbot fails with timeout:\n\n* make sure `80/tcp` is open in UFW\n* make sure your VPS provider firewall also allows `80/tcp` and `443/tcp`\n* make sure Cloudflare record is **DNS only**",
+        "code": "certbot --nginx -d usa-01.cookie-hosting.com"
+      },
+      {
+        "id": "vpsw-11",
+        "heading": "10) Final panel settings check",
+        "explanation": "In panel, edit the node and make sure it is exactly this:\n\nImportant:\n\n* **Do not set Daemon Port to 443**\n* 443 is nginx public SSL\n* panel still talks through nginx to Wings on `8080`",
+        "code": "FQDN: usa-01.cookie-hosting.com\nCommunicate Over SSL: Yes\nBehind Proxy: No\nDaemon Port: 8080\nDaemon SFTP Port: 2022"
+      },
+      {
+        "id": "vpsw-12",
+        "heading": "11) Restart services",
+        "explanation": "On the **node VPS**:\n\nHealthy signs:",
+        "code": "systemctl restart wings\nsystemctl reload nginx\nsystemctl status wings --no-pager\njournalctl -u wings -n 50 --no-pager\n\nfetching list of servers from API\nprocessing servers returned by the API\nconfiguring internal webserver host_port=8080\nsftp server listening for connections listen=0.0.0.0:2022"
+      },
+      {
+        "id": "vpsw-13",
+        "heading": "12) Verify connection",
+        "explanation": "From the **panel VPS** or anywhere reachable:\n\nExpected:\n\n* `401 Unauthorized`\n* JSON auth error\n\nThat is good. It means Wings is alive behind SSL.\n\nLocal node test:\n\nExpected:\n\n`{\"error\":\"The required authorization heads were not present in the request.\"}`\n\nThat is also good.",
+        "code": "curl -vk https://usa-01.cookie-hosting.com\n\ncurl http://127.0.0.1:8080"
+      },
+      {
+        "id": "vpsw-14",
+        "heading": "13) Done",
+        "explanation": "Go back to panel and refresh the node page.",
+        "code": "Boom = green heart"
+      },
+      {
+        "id": "vpsw-15",
+        "heading": "Common mistakes that caused problems before",
+        "explanation": "",
+        "code": "## Wrong `remote` URL in `/etc/pterodactyl/config.yml`\n\nBad:\nremote: http://panel.cookie-hosting.com\n\nGood:\nremote: https://panel.cookie-hosting.com\n\n## Wrong daemon port in panel\n\nBad:\nDaemon Port: 443\n\nGood:\nDaemon Port: 8080\n\n## Trying to use raw IP forever\n\nPossible, but messy. Real subdomain + SSL is cleaner and worked better.\n\n## Cloudflare proxied\n\nBad for this use:\nProxy status: Proxied\n\nGood:\nProxy status: DNS only\n\n## Certbot timeout\n\nUsually means:\n* port 80 blocked in UFW\n* port 80 blocked in provider firewall\n* DNS not pointed correctly\n* Cloudflare proxied"
+      },
+      {
+        "id": "vpsw-16",
+        "heading": "Quick repeat checklist",
+        "explanation": "",
+        "code": "1. Create DNS A record: usa-01 -> node IP (DNS only)\n2. Install Docker, Wings, Nginx, Certbot on node VPS\n3. Create node in panel:\n   - FQDN = usa-01.cookie-hosting.com\n   - SSL = Yes\n   - Behind Proxy = No\n   - Daemon Port = 8080\n   - SFTP = 2022\n4. Add allocation in panel\n5. Copy panel-generated config to /etc/pterodactyl/config.yml\n6. Make sure:\n   - api.ssl.enabled = false\n   - remote = https://panel.cookie-hosting.com\n7. Create wings.service\n8. Create nginx reverse proxy 80 -> 127.0.0.1:8080\n9. Run certbot --nginx -d usa-01.cookie-hosting.com\n10. Restart wings and nginx\n11. Refresh panel\n12. Green heart"
+      },
+      {
+        "id": "vpsw-17",
+        "heading": "Node VPS commands summary",
+        "explanation": "",
+        "code": "apt update && apt upgrade -y\napt install -y curl wget tar unzip git ufw sudo ca-certificates gnupg lsb-release nginx certbot python3-certbot-nginx\nmkdir -p /etc/apt/keyrings\ncurl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg\nchmod a+r /etc/apt/keyrings/docker.gpg\necho \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \\\"$VERSION_CODENAME\\\") stable\" > /etc/apt/sources.list.d/docker.list\napt update\napt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin\nsystemctl enable --now docker\nsystemctl enable --now nginx\ncurl -L -o /usr/local/bin/wings https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_amd64\nchmod +x /usr/local/bin/wings\nmkdir -p /etc/pterodactyl /var/lib/pterodactyl /var/log/pterodactyl\nufw allow 22/tcp\nufw allow 80/tcp\nufw allow 443/tcp\nufw allow 8080/tcp\nufw allow 2022/tcp\nufw --force enable\n\ncat >/etc/systemd/system/wings.service <<'EOF'\n[Unit]\nDescription=Wings Daemon\nAfter=docker.service\nRequires=docker.service\n\n[Service]\nUser=root\nWorkingDirectory=/etc/pterodactyl\nLimitNOFILE=4096\nPIDFile=/run/wings/daemon.pid\nExecStart=/usr/local/bin/wings\nRestart=on-failure\nStartLimitInterval=180\nStartLimitBurst=30\nRestartSec=5s\n\n[Install]\nWantedBy=multi-user.target\nEOF\n\nsystemctl daemon-reload\nsystemctl enable --now wings\n\ncat >/etc/nginx/sites-available/wings <<'EOF'\nserver {\n    listen 80;\n    server_name usa-01.cookie-hosting.com;\n\n    location / {\n        proxy_pass http://127.0.0.1:8080;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}\nEOF\n\nln -sf /etc/nginx/sites-available/wings /etc/nginx/sites-enabled/wings\nnginx -t\nsystemctl reload nginx\ncertbot --nginx -d usa-01.cookie-hosting.com\nsystemctl restart wings\nsystemctl reload nginx"
+      }
+    ],
+    "vipOnly": true
+  },
+  {
+    "id": "phpmyadmin-database-setup-cookiehosting",
+    "title": "PHPMYADMIN / DATABASE SETUP",
+    "description": "",
+    "locked": false,
+    "steps": [
+      {
+        "id": "pma-1",
+        "heading": "Goal",
+        "explanation": "",
+        "code": "Set up on the VPS:\n\n- **MySQL server**\n- **phpMyAdmin**\n- **SSL with nginx**\n- clean domains\n\n### Final domain mapping\n\n- **phpMyAdmin login URL**: `https://usa-01-mysql.cookie-hosting.com`\n- **MySQL database host**: `mysql-usa.cookie-hosting.com`\n- **VPS IP**: `172.236.253.112`\n\n### Database credentials\n\n- **Username**: `cookiehosting`\n- **Password**: `CookieHosting123!@#`"
+      },
+      {
+        "id": "pma-2",
+        "heading": "1) Create DNS records in Cloudflare",
+        "explanation": "Create these **A records** and set both to **DNS only**.\n\n## Important\n\n* Keep both as **DNS only**\n* Do **not** proxy MySQL through Cloudflare",
+        "code": "## phpMyAdmin domain\nType: A\nName: usa-01-mysql\nContent: 172.236.253.112\nProxy status: DNS only\n\n## MySQL host domain\nType: A\nName: mysql-usa\nContent: 172.236.253.112\nProxy status: DNS only"
+      },
+      {
+        "id": "pma-3",
+        "heading": "2) SSH into the VPS",
+        "explanation": "",
+        "code": "ssh root@172.236.253.112"
+      },
+      {
+        "id": "pma-4",
+        "heading": "3) Install MySQL, PHP, phpMyAdmin, nginx, Certbot",
+        "explanation": "Paste this:",
+        "code": "apt update && apt upgrade -y\n\napt install -y mysql-server nginx php-fpm php-mysql php-cli php-curl php-mbstring php-xml php-zip php-common phpmyadmin certbot python3-certbot-nginx curl unzip ufw"
+      },
+      {
+        "id": "pma-5",
+        "heading": "If phpMyAdmin installer asks questions",
+        "explanation": "",
+        "code": "* web server selection: okay if blank\n* dbconfig-common: **Yes**\n* app password: set one if asked, or let installer handle it"
+      },
+      {
+        "id": "pma-6",
+        "heading": "4) Secure MySQL",
+        "explanation": "Run:\n\nRecommended answers:",
+        "code": "mysql_secure_installation\n\nVALIDATE PASSWORD COMPONENT: n\nRemove anonymous users: y\nDisallow root login remotely: y\nRemove test database: y\nReload privilege tables: y"
+      },
+      {
+        "id": "pma-7",
+        "heading": "5) Create database and user",
+        "explanation": "Run:\n\nThen paste:",
+        "code": "mysql\n\nCREATE DATABASE cookiehosting;\nCREATE USER 'cookiehosting'@'%' IDENTIFIED BY 'CookieHosting123!@#';\nGRANT ALL PRIVILEGES ON cookiehosting.* TO 'cookiehosting'@'%';\nFLUSH PRIVILEGES;\nEXIT;"
+      },
+      {
+        "id": "pma-8",
+        "heading": "6) Allow remote MySQL connections",
+        "explanation": "Edit MySQL config:\n\nFind:\n\n`bind-address = 127.0.0.1`\n\nChange it to:\n\n`bind-address = 0.0.0.0`\n\nSave, then restart MySQL:",
+        "code": "nano /etc/mysql/mysql.conf.d/mysqld.cnf\n\nsystemctl restart mysql\nsystemctl enable mysql"
+      },
+      {
+        "id": "pma-9",
+        "heading": "7) Open firewall ports",
+        "explanation": "Paste this:",
+        "code": "ufw allow 22/tcp\nufw allow 80/tcp\nufw allow 443/tcp\nufw allow 3306/tcp\nufw --force enable\nufw status"
+      },
+      {
+        "id": "pma-10",
+        "heading": "8) Verify MySQL is listening",
+        "explanation": "Run:\n\nYou want to see MySQL listening on:\n\n`0.0.0.0:3306`",
+        "code": "ss -tulpn | grep 3306"
+      },
+      {
+        "id": "pma-11",
+        "heading": "9) Check PHP-FPM socket version",
+        "explanation": "Run:\n\nYou will likely see one of these:\n\n`php8.3-fpm.sock`\n\nor\n\n`php8.2-fpm.sock`\n\nRemember the exact socket name.",
+        "code": "ls /run/php/"
+      },
+      {
+        "id": "pma-12",
+        "heading": "10) Create nginx config for phpMyAdmin",
+        "explanation": "Create the file:\n\n## Important\n\nIf your socket is **not** `php8.3-fpm.sock`, replace it with the real one you found in `/run/php/`.\n\nExample:\n\n`fastcgi_pass unix:/run/php/php8.2-fpm.sock;`",
+        "code": "nano /etc/nginx/sites-available/phpmyadmin\n\nserver {\n    listen 80;\n    server_name usa-01-mysql.cookie-hosting.com;\n\n    root /usr/share/phpmyadmin;\n    index index.php index.html index.htm;\n\n    location / {\n        try_files $uri $uri/ /index.php?$args;\n    }\n\n    location ~ \\.php$ {\n        include snippets/fastcgi-php.conf;\n        fastcgi_pass unix:/run/php/php8.3-fpm.sock;\n        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n        include fastcgi_params;\n    }\n\n    location ~ /\\.ht {\n        deny all;\n    }\n}"
+      },
+      {
+        "id": "pma-13",
+        "heading": "11) Enable phpMyAdmin site",
+        "explanation": "Run:",
+        "code": "ln -sf /etc/nginx/sites-available/phpmyadmin /etc/nginx/sites-enabled/phpmyadmin\nnginx -t\nsystemctl reload nginx"
+      },
+      {
+        "id": "pma-14",
+        "heading": "12) Get SSL for phpMyAdmin",
+        "explanation": "Run:\n\nChoose redirect to HTTPS if asked.\n\n## If Certbot fails\n\nUsually one of these:\n\n* port `80` blocked in UFW\n* port `80` blocked in provider firewall\n* DNS record not pointing to the VPS yet\n* Cloudflare record is proxied instead of DNS only",
+        "code": "certbot --nginx -d usa-01-mysql.cookie-hosting.com"
+      },
+      {
+        "id": "pma-15",
+        "heading": "13) Final URLs and login info",
+        "explanation": "",
+        "code": "## phpMyAdmin URL\nhttps://usa-01-mysql.cookie-hosting.com\n\n## MySQL host for apps/panel\nmysql-usa.cookie-hosting.com\n\n## MySQL port\n3306\n\n## Database name\ncookiehosting\n\n## Username\ncookiehosting\n\n## Password\nCookieHosting123!@#"
+      }
+    ],
     "vipOnly": true
   }
 ]
