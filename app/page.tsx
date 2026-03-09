@@ -610,25 +610,24 @@ function generateId() {
 
 // Simple markdown renderer for explanations
 function renderMarkdown(text: string): React.ReactNode {
-  // Split by newlines first to preserve line breaks
   const lines = text.split('\n');
-  return lines.map((line, i) => {
-    // Process inline markdown: **bold**, *italic*, `code`, [link](url)
+  
+  // Process inline markdown for a line
+  const processInline = (line: string): React.ReactNode[] => {
     const parts: React.ReactNode[] = [];
     let remaining = line;
     let key = 0;
     
     while (remaining.length > 0) {
-      // Bold: **text**
-      const boldMatch = remaining.match(/\*\*(.+?)\*\*/);
-      // Italic: *text*
-      const italicMatch = remaining.match(/(?<!\*)\*([^*]+)\*(?!\*)/);
+      // Bold: **text** or __text__
+      const boldMatch = remaining.match(/(\*\*|__)(.+?)\1/);
+      // Italic: *text* or _text_
+      const italicMatch = remaining.match(/(?<![*_])([*_])([^*_]+)\1(?![*_])/);
       // Code: `text`
       const codeMatch = remaining.match(/`([^`]+)`/);
       // Link: [text](url)
       const linkMatch = remaining.match(/\[([^\]]+)\]\(([^)]+)\)/);
       
-      // Find the earliest match
       const matches = [
         boldMatch && { type: 'bold', match: boldMatch, index: boldMatch.index! },
         italicMatch && { type: 'italic', match: italicMatch, index: italicMatch.index! },
@@ -647,9 +646,9 @@ function renderMarkdown(text: string): React.ReactNode {
       }
       
       if (first.type === 'bold') {
-        parts.push(<strong key={key++} className="font-semibold">{first.match[1]}</strong>);
+        parts.push(<strong key={key++} className="font-bold">{first.match[2]}</strong>);
       } else if (first.type === 'italic') {
-        parts.push(<em key={key++}>{first.match[1]}</em>);
+        parts.push(<em key={key++}>{first.match[2]}</em>);
       } else if (first.type === 'code') {
         parts.push(<code key={key++} className="px-1 py-0.5 bg-[var(--t-bg-tertiary)] rounded text-xs font-mono">{first.match[1]}</code>);
       } else if (first.type === 'link') {
@@ -658,10 +657,33 @@ function renderMarkdown(text: string): React.ReactNode {
       
       remaining = remaining.slice(first.index + first.match[0].length);
     }
+    return parts;
+  };
+  
+  return lines.map((line, i) => {
+    // Headings: # ## ### ####
+    const h1Match = line.match(/^#\s+(.+)$/);
+    const h2Match = line.match(/^##\s+(.+)$/);
+    const h3Match = line.match(/^###\s+(.+)$/);
+    const h4Match = line.match(/^####\s+(.+)$/);
     
+    if (h4Match) {
+      return <span key={i} className="block text-sm font-semibold text-[var(--t-text-primary)] mt-2">{processInline(h4Match[1])}</span>;
+    }
+    if (h3Match) {
+      return <span key={i} className="block text-base font-semibold text-[var(--t-text-primary)] mt-2">{processInline(h3Match[1])}</span>;
+    }
+    if (h2Match) {
+      return <span key={i} className="block text-lg font-bold text-[var(--t-text-primary)] mt-3">{processInline(h2Match[1])}</span>;
+    }
+    if (h1Match) {
+      return <span key={i} className="block text-xl font-bold text-[var(--t-text-primary)] mt-3">{processInline(h1Match[1])}</span>;
+    }
+    
+    // Regular paragraph with inline formatting
     return (
       <span key={i}>
-        {parts}
+        {processInline(line)}
         {i < lines.length - 1 && <br />}
       </span>
     );
