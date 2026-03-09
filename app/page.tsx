@@ -680,6 +680,17 @@ function renderMarkdown(text: string): React.ReactNode {
       return <span key={i} className="block text-xl font-bold text-[var(--t-text-primary)] mt-3">{processInline(h1Match[1])}</span>;
     }
     
+    // List items: * item or - item at start of line
+    const listMatch = line.match(/^[\*\-]\s+(.+)$/);
+    if (listMatch) {
+      return (
+        <span key={i} className="block pl-4 relative">
+          <span className="absolute left-0 text-[var(--t-text-faint)]">-</span>
+          {processInline(listMatch[1])}
+        </span>
+      );
+    }
+    
     // Regular paragraph with inline formatting
     return (
       <span key={i}>
