@@ -702,5 +702,18 @@
       }
     ],
     "vipOnly": true
+  },
+  {
+    "id": "711re1nzn",
+    "title": "app5 [w view and add]",
+    "description": "",
+    "steps": [
+      {
+        "id": "rm12tqki5",
+        "heading": "test",
+        "explanation": "",
+        "code": "from werkzeug.wrappers import Request, Response\nfrom werkzeug.routing import Map, Rule\nfrom werkzeug.exceptions import NotFound\nfrom werkzeug.utils import redirect\nimport sqlite3\n\nfrom jinja2 import Environment, FileSystemLoader\n\n\n# ------------------------\n# Basic setup\n# ------------------------\n\nBASE_URL = \"/it21_banas/webapps/app5\"\n\nenv = Environment(loader=FileSystemLoader(\"templates\"))\n\n\ndef render(template, **context):\n    context.update({\n        \"base_url\": BASE_URL,\n    })\n\n    return Response(\n        env.get_template(template).render(**context),\n        content_type=\"text/html\"\n    )\n\n\n# ------------------------\n# Routes\n# ------------------------\n\nurl_map = Map([\n    Rule(\"/\", endpoint=\"home\"),\n\n    Rule(\"/products\", endpoint=\"products\"),\n    Rule(\"/products/add\", endpoint=\"add_product\", methods=[\"GET\", \"POST\"]),\n    Rule(\"/products/view\", endpoint=\"view_products\"),\n\n    Rule(\"/services\", endpoint=\"services\"),\n    Rule(\"/register\", endpoint=\"register\", methods=[\"GET\", \"POST\"]),\n])\n\n\n# ------------------------\n# View functions\n# ------------------------\n\ndef home(request):\n    return render(\"home.html\")\n\n\ndef register(request):\n    error = None\n    success = None\n\n    if request.method == \"POST\":\n\n        email = request.form.get(\"email\").strip()\n        password = request.form.get(\"password\").strip()\n\n        if not email:\n            error = \"All fields are required.\"\n        else:\n            success = f\"Welcome, {email}! You are registered.\"\n\n    return render(\"register.html\", error=error, success=success)\n\n\ndef products(request):\n\n    conn = sqlite3.connect(\"products.db\")\n    cursor = conn.cursor()\n\n    cursor.execute(\"SELECT id, name, brand, price, stock FROM products\")\n    rows = cursor.fetchall()\n\n    conn.close()\n\n    product_items = []\n\n    for row in rows:\n        product_items.append({\n            \"id\": row[0],\n            \"name\": row[1],\n            \"brand\": row[2],\n            \"price\": row[3],\n            \"stock\": row[4]\n        })\n\n    return render(\"products.html\", product_items=product_items)\n\n\ndef services(request):\n    return render(\"services.html\")\n\n\ndef add_product(request):\n\n    if request.method == \"POST\":\n\n        name = request.form.get(\"name\")\n        brand = request.form.get(\"brand\")\n        price = request.form.get(\"price\")\n        stock = request.form.get(\"stock\")\n\n        conn = sqlite3.connect(\"products.db\")\n        cursor = conn.cursor()\n\n        cursor.execute(\n            \"INSERT INTO products (name, brand, price, stock) VALUES (?, ?, ?, ?)\",\n            (name, brand, price, stock)\n        )\n\n        conn.commit()\n        conn.close()\n\n        return redirect(\"/it21_banas/webapps/app5/products/view\")\n\n    return render(\"add_product.html\")\n\n\ndef view_products(request):\n    return products(request)\n\n\n# ------------------------\n# WSGI app\n# ------------------------\n\n@Request.application\ndef app(request):\n\n    adapter = url_map.bind_to_environ(request.environ)\n\n    try:\n        endpoint, values = adapter.match()\n        return globals()[endpoint](request, **values)\n\n    except NotFound:\n        return Response(\"404 Not Found\", status=404)"
+      }
+    ]
   }
 ]
