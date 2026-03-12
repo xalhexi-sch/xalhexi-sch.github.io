@@ -62,6 +62,80 @@
     "starred": true
   },
   {
+    "id": "btntsvw1k",
+    "title": "app5 or app7",
+    "description": "",
+    "steps": [
+      {
+        "id": "st91ognom",
+        "heading": "/templates/base.html",
+        "explanation": "",
+        "code": "<!DOCTYPE html>\n<html>\n<head>\n    <title>{{ title }}</title>\n    <!-- Bootstrap CSS -->\n    <link rel=\"stylesheet\" href=\"http://172.17.100.15:9899/bootstrap.min.css\">\n</head>\n<body>\n\n\n    <div class=\"container-sm\">\n\n\n         {% include \"navigation.html\" %}\n       \n        <!-- Content here -->\n        <h1>{{ title }}</h1>\n        <p>{{ message }}</p>\n\n\n \n\n\n        {% block content %}\n       \n        {% endblock %}\n</div>\n   \n\n\n    <!-- Bootstrap JS Bundle -->\n    <script src=\"http://172.17.100.15:9899/bootstrap.bundle.min.js\"></script>\n</body>\n</html>"
+      },
+      {
+        "id": "x098mj1k4",
+        "heading": "/templates/home.html",
+        "explanation": "",
+        "code": "{% extends \"base.html\" %}\n\n\n{% block title %}Home{% endblock %}\n\n\n{% block content %}\n<h2>Welcome to the Home Page</h2>\n<p>Use the navigation above to login or go to the dashboard.</p>\n{% endblock %}"
+      },
+      {
+        "id": "jewqaqr7s",
+        "heading": "/templates/navigation.html",
+        "explanation": "",
+        "code": "<nav class=\"navbar navbar-expand-lg bg-body-tertiary\" data-bs-theme=\"dark\">\n  <div class=\"container-fluid\">\n    <a class=\"navbar-brand\" href=\"#\">Navbar</a>\n    <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNavDropdown\" aria-controls=\"navbarNavDropdown\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n      <span class=\"navbar-toggler-icon\"></span>\n    </button>\n    <div class=\"collapse navbar-collapse\" id=\"navbarNavDropdown\">\n      <ul class=\"navbar-nav\">\n        <li class=\"nav-item\">\n          <a class=\"nav-link active\" aria-current=\"page\" href=\"{{ base_url }}/\">Home</a>\n        </li>\n        <li class=\"nav-item\">\n          <a class=\"nav-link\" href=\"{{ base_url }}/products\">Products</a>\n        </li>\n        <li class=\"nav-item\">\n          <a class=\"nav-link\" href=\"{{ base_url }}/services\">Services</a>\n        </li>\n        <li class=\"nav-item dropdown\">\n          <a class=\"nav-link dropdown-toggle\" href=\"#\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n            About Us\n          </a>\n          <ul class=\"dropdown-menu\">\n            <li><a class=\"dropdown-item\" href=\"{{ base_url }}/register\">Register</a></li>\n            <li><a class=\"dropdown-item\" href=\"#\">The History</a></li>\n            <li><a class=\"dropdown-item\" href=\"#\">Contact Us</a></li>\n          </ul>\n        </li>\n      </ul>\n    </div>\n  </div>\n</nav>"
+      },
+      {
+        "id": "bxmjnt0zc",
+        "heading": "/templates/products.html",
+        "explanation": "",
+        "code": "{% extends \"base.html\" %}\n\n\n\n\n{% block content %}\n<h1>Products</h1>\n\n<table border=\"1\">\n<tr>\n    <th>ID</th>\n    <th>Name</th>\n    <th>Brand</th>\n    <th>Price</th>\n    <th>Stock</th>\n</tr>\n\n{% for product in product_items %}\n<tr>\n    <td>{{ product.id }}</td>\n    <td>{{ product.name }}</td>\n    <td>{{ product.brand }}</td>\n    <td>{{ product.price }}</td>\n    <td>{{ product.stock }}</td>\n</tr>\n{% endfor %}\n\n</table>\n\n\n\n\n\n\n{% endblock %}"
+      },
+      {
+        "id": "n91bmpnsv",
+        "heading": "/templates/register.html",
+        "explanation": "",
+        "code": "{% extends \"base.html\" %}\n\n\n\n\n\n\n{% block content %}\n\n\n\n\n\n\n{% if error %}\n  <div class=\"alert alert-danger\">{{ error }}</div>\n{% endif %}\n\n\n{% if success %}\n  <div class=\"alert alert-success\">{{ success }}</div>\n\n\n\n\n{% endif %}\n\n\n{% if not success %}\n<form method=\"POST\" action=\"{{ base_url }}/register\">\n  <div class=\"form-group\">\n    <label for=\"exampleInputEmail1\">Email address</label>\n    <input type=\"email\" class=\"form-control\" id=\"exampleInputEmail1\" name=\"email\" aria-describedby=\"emailHelp\" placeholder=\"Enter email\">\n    <small id=\"emailHelp\" class=\"form-text text-muted\">We'll never share your email with anyone else.</small>\n  </div>\n  <div class=\"form-group\">\n    <label for=\"exampleInputPassword1\">Password</label>\n    <input type=\"password\" class=\"form-control\" id=\"exampleInputPassword1\"  name=\"password\" placeholder=\"Password\">\n  </div>\n \n  <button type=\"submit\" class=\"btn btn-primary\">Submit</button>\n</form>\n\n\n{% endif %}\n\n\n{% endblock %}"
+      },
+      {
+        "id": "gjpywtpxz",
+        "heading": "/templates/services.html",
+        "explanation": "",
+        "code": "{% extends \"base.html\" %}\n\n\n{% block content %}\n<h2>Our Services</h2>\n\n\n{% endblock %}"
+      },
+      {
+        "id": "spe9ydchi",
+        "heading": "app.py",
+        "explanation": "",
+        "code": "from werkzeug.wrappers import Request, Response\nfrom werkzeug.routing import Map, Rule\nfrom werkzeug.exceptions import NotFound\nimport sqlite3\n\n\n\n\nfrom jinja2 import Environment, FileSystemLoader\n\n\n# ------------------------\n# Basic setup\n# ------------------------\n\n\nBASE_URL = \"/it21_banas/webapps/app5\"\n\n\nenv = Environment(loader=FileSystemLoader(\"templates\"))\n\n\ndef render(template, **context):\n    context.update({\n        \"base_url\": BASE_URL,        \n    })\n    return Response(\n        env.get_template(template).render(**context),\n        content_type=\"text/html\"\n    )\n\n\n# ------------------------\n# Routes\n# ------------------------\nurl_map = Map([\n    Rule(\"/\", endpoint=\"home\"),    \n    Rule(\"/products\", endpoint=\"products\"),    \n    Rule(\"/services\", endpoint=\"services\"),\n    Rule(\"/register\", endpoint=\"register\",methods=[\"GET\", \"POST\"]),\n])\n\n\n# ------------------------\n# View functions\n# ------------------------\ndef home(request):\n\n\n    return render(\"home.html\")\n\n\ndef register(request):\n    error = None\n    success = None\n\n\n    if request.method == \"POST\":\n        email = request.form.get(\"email\").strip()\n        password    = request.form.get(\"password\").strip()\n   \n\n\n        if not email :\n            error = \"All fields are required.\"\n        else:          \n            success = f\"Welcome, {email}! You are registered.\"\n\n\n    return render(\"register.html\", error=error, success=success)\n\n\ndef products(request):\n\n    conn = sqlite3.connect(\"products.db\")\n    cursor = conn.cursor()\n\n    cursor.execute(\"SELECT id, name, brand, price, stock FROM products\")\n    rows = cursor.fetchall()\n\n    conn.close()\n\n    product_items = []\n\n    for row in rows:\n        product_items.append({\n            \"id\": row[0],\n            \"name\": row[1],\n            \"brand\": row[2],\n            \"price\": row[3],\n            \"stock\": row[4]\n        })\n\n    return render(\"products.html\", product_items=product_items)\n    \n    \n    product_items = [\n        {\n            \"id\": 1,\n            \"name\": \"Gaming Laptop\",\n            \"brand\": \"Dell\",\n            \"price\": 1500,\n            \"stock\": 10\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Mechanical Keyboard\",\n            \"brand\": \"Logitech\",\n            \"price\": 120,\n            \"stock\": 25\n        }]\n    \n    return render(\"products.html\", product_items = product_items)    \n\n\n \ndef services(request):\n\n\n    return render(\"services.html\")\n\n\n# ------------------------\n# WSGI app\n# ------------------------\n@Request.application\ndef app(request):\n    adapter = url_map.bind_to_environ(request.environ)\n\n\n    try:\n        endpoint, values = adapter.match()\n        return globals()[endpoint](request, **values)\n    except NotFound:\n        return Response(\"404 Not Found\", status=404)"
+      },
+      {
+        "id": "xpv0gbpp5",
+        "heading": "RUN THIS AS COMMAND",
+        "explanation": "",
+        "code": "sqlite3 products.db"
+      },
+      {
+        "id": "gzx8kofrq",
+        "heading": "AFTER AFTER OPENING SQLLITE:",
+        "explanation": "",
+        "code": "CREATE TABLE products (\n    id INTEGER PRIMARY KEY,\n    name TEXT,\n    brand TEXT,\n    price REAL,\n    stock INTEGER\n);"
+      },
+      {
+        "id": "amxosm1bq",
+        "heading": "INSERT DATA",
+        "explanation": "",
+        "code": "INSERT INTO products (name, brand, price, stock)\nVALUES (\"Gaming Laptop\", \"Dell\", 1500, 10);\n\nINSERT INTO products (name, brand, price, stock)\nVALUES (\"Mechanical Keyboard\", \"Logitech\", 120, 25);"
+      },
+      {
+        "id": "kzqefbrgr",
+        "heading": "CHECK TABLE (OPTIONAL)",
+        "explanation": "",
+        "code": ".tables\n.schema products\nSELECT * FROM products;"
+      }
+    ],
+    "starred": true
+  },
+  {
     "id": "vonvgdayy",
     "title": "App4 [NEW]",
     "description": "",
