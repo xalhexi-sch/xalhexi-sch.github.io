@@ -131,6 +131,12 @@
         "heading": "CHECK TABLE (OPTIONAL)",
         "explanation": "",
         "code": ".tables\n.schema products\nSELECT * FROM products;"
+      },
+      {
+        "id": "bnuihgekt",
+        "heading": "CHANGES NAME OF PRODUCT",
+        "explanation": "BE SPECFIC",
+        "code": "UPDATE products\nSET name = 'Pro Gaming Laptop'\nWHERE name = 'Gaming Laptop';"
       }
     ],
     "starred": true
