@@ -1,9 +1,15 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Inter, Playfair_Display, Geist_Mono } from 'next/font/google'
+import CursorGlow from '@/components/cursor-glow'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const playfair = Playfair_Display({ 
+  subsets: ["latin"], 
+  style: ["normal", "italic"],
+  variable: "--font-playfair" 
+});
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
   title: "xalhexi.wtf - Tutorials & Repos",
@@ -21,8 +27,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`font-sans antialiased bg-background text-foreground`}>
+    <html lang="en" className={`dark ${inter.variable} ${playfair.variable} ${geistMono.variable}`}>
+      <body className="font-sans antialiased bg-background text-foreground">
+        <CursorGlow />
         {children}
       </body>
     </html>

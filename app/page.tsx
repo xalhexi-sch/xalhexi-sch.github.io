@@ -3,10 +3,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import hljs from "highlight.js";
-import AIAssistant from "@/components/ai-assistant";
 import DiffViewer from "@/components/diff-viewer";
-import CommunityChat from "@/components/community-chat";
-import Link from "next/link";
 
 // Dynamically load Monaco Editor to avoid SSR issues
 const MonacoEditor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.default), { ssr: false, loading: () => <div className="h-[200px] flex items-center justify-center bg-[var(--t-bg-primary)] text-[var(--t-text-faint)] text-xs">Loading editor...</div> });
@@ -69,6 +66,10 @@ import {
   RefreshCw,
   FolderIcon,
   FileIcon,
+  Home,
+  Users,
+  Shield,
+  Code2,
   ChevronLeft,
   GitBranch,
   Sun,
@@ -883,28 +884,80 @@ function StepImageDisplay({ img, altText }: { img: StepImage; altText: string })
 // Code block with copy and hljs syntax highlighting
 function CodeBlock({ code, onCopy, lineHighlights }: { code: string; onCopy: (text: string) => void; lineHighlights?: Map<number, "added" | "removed" | "modified"> }) {
   const [copied, setCopied] = useState(false);
-  const [animating, setAnimating] = useState(false);
 
-  const highlightedLines = useMemo(() => {
+  const { highlightedLines, detectedLanguage } = useMemo(() => {
     try {
-      const html = hljs.highlightAuto(code).value;
-      return html.split("\n");
+      const result = hljs.highlightAuto(code);
+      const langMap: Record<string, string> = {
+        bash: "BASH", shell: "SHELL", sh: "SHELL",
+        javascript: "JS", js: "JS",
+        typescript: "TS", ts: "TS",
+        python: "PYTHON", py: "PYTHON",
+        html: "HTML", xml: "XML",
+        css: "CSS", scss: "SCSS",
+        json: "JSON", yaml: "YAML", yml: "YAML",
+        dockerfile: "DOCKER",
+        sql: "SQL",
+        rust: "RUST", go: "GO", java: "JAVA",
+        cpp: "C++", c: "C",
+        ruby: "RUBY", php: "PHP",
+        markdown: "MD", md: "MD",
+      };
+      const lang = result.language || "plaintext";
+      return {
+        highlightedLines: result.value.split("\n"),
+        detectedLanguage: langMap[lang.toLowerCase()] || lang.toUpperCase(),
+      };
     } catch {
-      return code.split("\n").map((l) => l.replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+      return {
+        highlightedLines: code.split("\n").map((l) => l.replace(/</g, "&lt;").replace(/>/g, "&gt;")),
+        detectedLanguage: "CODE",
+      };
     }
   }, [code]);
 
   const handleCopy = () => {
     onCopy(code);
     setCopied(true);
-    setAnimating(true);
     setTimeout(() => setCopied(false), 1200);
-    setTimeout(() => setAnimating(false), 300);
   };
 
   return (
-    <div className="rounded-md overflow-hidden border border-[var(--t-border)] bg-[var(--t-bg-primary)]">
-      <pre className="text-sm font-mono overflow-x-auto leading-relaxed py-3 pr-4">
+    <div className="rounded-xl overflow-hidden border border-[var(--t-border)] bg-[#1a1b26] shadow-lg">
+      {/* macOS-style header with traffic lights */}
+      <div className="flex items-center justify-between px-4 py-2.5 bg-[#16171f] border-b border-[var(--t-border)]">
+        <div className="flex items-center gap-2">
+          {/* Traffic light buttons */}
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-[#ff5f57] shadow-inner" />
+            <span className="w-3 h-3 rounded-full bg-[#febc2e] shadow-inner" />
+            <span className="w-3 h-3 rounded-full bg-[#28c840] shadow-inner" />
+          </div>
+          {/* Language badge */}
+          <span className="ml-3 px-2 py-0.5 text-[10px] font-semibold tracking-wider bg-[var(--t-bg-tertiary)] text-[var(--t-text-muted)] rounded">
+            {detectedLanguage}
+          </span>
+        </div>
+        {/* Copy button */}
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium text-[var(--t-text-muted)] hover:text-[var(--t-text-primary)] hover:bg-[var(--t-bg-tertiary)] rounded transition-colors"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3 h-3 text-[var(--t-accent-green-text)]" />
+              <span>Copied!</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3" />
+              <span>Copy</span>
+            </>
+          )}
+        </button>
+      </div>
+      {/* Code content */}
+      <pre className="text-sm font-mono overflow-x-auto leading-relaxed py-4 pr-4">
         <code className="hljs block">
           {highlightedLines.map((line, i) => {
             const hl = lineHighlights?.get(i);
@@ -913,7 +966,7 @@ function CodeBlock({ code, onCopy, lineHighlights }: { code: string; onCopy: (te
                   hl === "removed" ? "bg-red-500/15" :
                     hl === "modified" ? "bg-amber-500/15" : ""
                 }`}>
-                <span className={`inline-block w-10 pr-3 text-right select-none opacity-50 shrink-0 ${hl === "added" ? "text-[var(--t-accent-green-text)]" :
+                <span className={`inline-block w-12 pr-4 text-right select-none opacity-40 shrink-0 ${hl === "added" ? "text-[var(--t-accent-green-text)]" :
                     hl === "removed" ? "text-[#f85149]" :
                       hl === "modified" ? "text-amber-400" :
                         "text-[var(--t-text-faint)]"
@@ -1495,7 +1548,7 @@ export default function ITPTutorial() {
   const [showTerminal, setShowTerminal] = useState(false);
   const [terminalFullscreen, setTerminalFullscreen] = useState(false);
   const [terminalLocked, setTerminalLocked] = useState(true); // Terminal is locked by default
-  const [showAIChat, setShowAIChat] = useState(false);
+  
   const [draggedTutorial, setDraggedTutorial] = useState<string | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(320); // 20rem = 320px default
   const [isResizing, setIsResizing] = useState(false);
@@ -1506,7 +1559,7 @@ export default function ITPTutorial() {
   const [isPushing, setIsPushing] = useState(false);
   const [colorTheme, setColorTheme] = useState<"dark" | "light" | "cyber">("dark");
   const [isLoadingTutorials, setIsLoadingTutorials] = useState(true);
-  const [activeTab, setActiveTab] = useState<"tutorials" | "repositories">("tutorials");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "tutorials" | "repositories">("dashboard");
   const [repos, setRepos] = useState<GithubRepo[]>([]);
   const [isLoadingRepos, setIsLoadingRepos] = useState(false);
   const [reposLoaded, setReposLoaded] = useState(false);
@@ -1739,7 +1792,7 @@ export default function ITPTutorial() {
   };
 
   const currentTutorial = tutorials.find((t) => t.id === selectedTutorial) || tutorials[0] || null;
-  const currentStepForAI = currentTutorial?.steps?.[0] || null;
+  
 
   const handleLogin = async (u: string, p: string): Promise<boolean> => {
     try {
@@ -2503,48 +2556,69 @@ export default function ITPTutorial() {
               }`}
           />
           <div className="flex flex-col h-full">
-            {/* Sidebar top: tabs */}
-            <div className="p-4 pb-0 shrink-0">
-              {/* Tab buttons */}
-              <div className="flex items-center gap-1 mb-4">
+            {/* Sidebar navigation */}
+            <div className="p-4 shrink-0">
+              {/* NAVIGATE section */}
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--t-text-faint)] mb-3">Navigate</div>
+              <nav className="space-y-1 mb-6">
                 <button
-                  onClick={() => switchTab("tutorials")}
-                  className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wide rounded-md transition-colors ${activeTab === "tutorials"
-                      ? "bg-[var(--t-accent-green)] text-white"
-                      : "bg-[var(--t-bg-tertiary)] text-[var(--t-text-muted)] hover:bg-[var(--t-bg-hover)] hover:text-[var(--t-text-primary)]"
+                  onClick={() => setActiveTab("dashboard")}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === "dashboard"
+                      ? "bg-[var(--t-accent-blue)]/15 text-[var(--t-accent-blue)] font-medium"
+                      : "text-[var(--t-text-muted)] hover:bg-[var(--t-bg-tertiary)] hover:text-[var(--t-text-primary)]"
                     }`}
                 >
-                  Tutorials
+                  <Home className="w-4 h-4" />
+                  <span>Dashboard</span>
+                </button>
+                <button
+                  onClick={() => switchTab("tutorials")}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === "tutorials"
+                      ? "bg-[var(--t-accent-blue)]/15 text-[var(--t-accent-blue)] font-medium"
+                      : "text-[var(--t-text-muted)] hover:bg-[var(--t-bg-tertiary)] hover:text-[var(--t-text-primary)]"
+                    }`}
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span>Tutorials</span>
                 </button>
                 <button
                   onClick={() => switchTab("repositories")}
-                  className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wide rounded-md transition-colors ${activeTab === "repositories"
-                      ? "bg-[var(--t-accent-green)] text-white"
-                      : "bg-[var(--t-bg-tertiary)] text-[var(--t-text-muted)] hover:bg-[var(--t-bg-hover)] hover:text-[var(--t-text-primary)]"
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === "repositories"
+                      ? "bg-[var(--t-accent-blue)]/15 text-[var(--t-accent-blue)] font-medium"
+                      : "text-[var(--t-text-muted)] hover:bg-[var(--t-bg-tertiary)] hover:text-[var(--t-text-primary)]"
                     }`}
                 >
-                  Repositories
+                  <Github className="w-4 h-4" />
+                  <span>Repositories</span>
                 </button>
-                <span
-                  className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide rounded-md bg-[var(--t-bg-tertiary)] text-[var(--t-text-faint)] cursor-not-allowed flex items-center gap-1.5 opacity-60"
-                  title="Thread - Coming Soon"
-                >
-                  <Lock className="w-3 h-3" />
-                  Thread
-                </span>
-                {activeTab === "tutorials" && isAdmin && (
-                  <button
-                    onClick={() => {
-                      setEditingTutorial(null);
-                      setTutorialModalOpen(true);
-                    }}
-                    className="ml-auto p-1 hover:bg-[var(--t-bg-tertiary)] rounded text-[var(--t-text-muted)] hover:text-[var(--t-text-primary)]"
-                    title="Add Tutorial"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
+              </nav>
+
+              {/* ADMIN TOOLS section */}
+              {isAdmin && (
+                <>
+                  <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--t-text-faint)] mb-3">Admin Tools</div>
+                  <nav className="space-y-1 mb-4">
+                    <button
+                      onClick={() => {
+                        setEditingTutorial(null);
+                        setTutorialModalOpen(true);
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[var(--t-text-muted)] hover:bg-[var(--t-bg-tertiary)] hover:text-[var(--t-text-primary)] transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>New Tutorial</span>
+                    </button>
+                    <button
+                      onClick={() => setShowLoginModal(true)}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[var(--t-text-muted)] hover:bg-[var(--t-bg-tertiary)] hover:text-[var(--t-text-primary)] transition-colors"
+                    >
+                      <Users className="w-4 h-4" />
+                      <span>Manage Access</span>
+                      <span className="ml-auto text-[10px] px-1.5 py-0.5 bg-[var(--t-accent-green)]/20 text-[var(--t-accent-green-text)] rounded">VIP</span>
+                    </button>
+                  </nav>
+                </>
+              )}
             </div>
 
             {/* Sidebar middle: scrollable content */}
@@ -2757,18 +2831,7 @@ export default function ITPTutorial() {
                   )}
                 </div>
               )}
-              {/* AI Assistant button */}
-              <button
-                onClick={() => setShowAIChat(true)}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${showAIChat
-                    ? "bg-[var(--t-accent-blue)]/10 text-[var(--t-accent-blue)]"
-                    : "text-[var(--t-accent-purple,#a78bfa)] hover:bg-[var(--t-bg-tertiary)]"
-                  }`}
-              >
-                <Zap className="w-4 h-4" />
-                <span>AI Assistant</span>
-                {showAIChat && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[var(--t-accent-green)]" />}
-              </button>
+
               <a
                 href="https://github.com/xalhexi-sch"
                 target="_blank"
@@ -2793,6 +2856,105 @@ export default function ITPTutorial() {
         {/* Main Content + Terminal Split */}
         <div className={`flex-1 min-w-0 flex ${showTerminal && !terminalFullscreen && (isAdmin || !terminalLocked) ? '' : 'justify-center'}`}>
           <main className={`${showTerminal && !terminalFullscreen && (isAdmin || !terminalLocked) ? 'w-1/2' : 'w-full max-w-4xl'} min-w-0 p-4 lg:p-6 overflow-y-auto`}>
+
+            {/* Dashboard View */}
+            {activeTab === "dashboard" && (
+              <div className="max-w-4xl mx-auto">
+                {/* Hero Section */}
+                <div className="mb-12 pt-8">
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl leading-tight mb-6">
+                    <span className="font-bold text-[var(--t-text-primary)]">The Tutorial Hub for</span>
+                    <br />
+                    <span className="font-serif italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">IT 21 Students</span>
+                  </h1>
+                  <p className="text-lg text-[var(--t-text-muted)] max-w-2xl mb-8 leading-relaxed">
+                    A web app where IT students can find step-by-step tutorials on Git, SSH, Python, Ubuntu, and more -- written in a way that&apos;s easy to follow even if you&apos;re just starting out. Built by <span className="text-[var(--t-accent-blue)]">xalhexi</span> for fellow students.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-4 text-sm">
+                    <span className="flex items-center gap-2 text-[var(--t-text-muted)]">
+                      <Code2 className="w-4 h-4 text-cyan-400" />
+                      <span>Free & Open Source</span>
+                    </span>
+                    <span className="flex items-center gap-2 text-[var(--t-text-muted)]">
+                      <Shield className="w-4 h-4 text-cyan-400" />
+                      <span>Self-host for Privacy</span>
+                    </span>
+                    <span className="flex items-center gap-2 text-[var(--t-text-muted)]">
+                      <Users className="w-4 h-4 text-cyan-400" />
+                      <span>For Friends & Classmates in FSUU</span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quick Access Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+                  <button
+                    onClick={() => switchTab("tutorials")}
+                    className="group p-6 bg-[var(--t-bg-secondary)] border border-[var(--t-border)] rounded-xl hover:border-[var(--t-accent-blue)]/50 transition-all text-left"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2.5 bg-[var(--t-accent-blue)]/10 rounded-lg">
+                        <BookOpen className="w-5 h-5 text-[var(--t-accent-blue)]" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-[var(--t-text-primary)]">Tutorials</h3>
+                      <ChevronRight className="w-4 h-4 text-[var(--t-text-faint)] ml-auto group-hover:translate-x-1 transition-transform" />
+                    </div>
+                    <p className="text-sm text-[var(--t-text-muted)]">
+                      Step-by-step guides for Git, SSH, Docker, Pterodactyl, and more.
+                    </p>
+                    <div className="mt-4 text-xs text-[var(--t-text-faint)]">
+                      {tutorials.length} tutorials available
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => switchTab("repositories")}
+                    className="group p-6 bg-[var(--t-bg-secondary)] border border-[var(--t-border)] rounded-xl hover:border-[var(--t-accent-blue)]/50 transition-all text-left"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2.5 bg-[var(--t-accent-green)]/10 rounded-lg">
+                        <Github className="w-5 h-5 text-[var(--t-accent-green-text)]" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-[var(--t-text-primary)]">Repositories</h3>
+                      <ChevronRight className="w-4 h-4 text-[var(--t-text-faint)] ml-auto group-hover:translate-x-1 transition-transform" />
+                    </div>
+                    <p className="text-sm text-[var(--t-text-muted)]">
+                      Browse GitHub repos with built-in diff viewer and file browser.
+                    </p>
+                    <div className="mt-4 text-xs text-[var(--t-text-faint)]">
+                      {repos.length > 0 ? `${repos.length} repositories` : "Browse repos"}
+                    </div>
+                  </button>
+                </div>
+
+                {/* Recent Tutorials */}
+                {tutorials.length > 0 && (
+                  <div>
+                    <h2 className="text-lg font-semibold text-[var(--t-text-primary)] mb-4">Recent Tutorials</h2>
+                    <div className="space-y-2">
+                      {tutorials.slice(0, 5).map((tutorial) => (
+                        <button
+                          key={tutorial.id}
+                          onClick={() => { setSelectedTutorial(tutorial.id); setActiveTab("tutorials"); }}
+                          className="w-full flex items-center gap-4 p-4 bg-[var(--t-bg-secondary)] border border-[var(--t-border)] rounded-lg hover:border-[var(--t-text-faint)] transition-colors text-left group"
+                        >
+                          <div className="p-2 bg-[var(--t-bg-tertiary)] rounded-lg">
+                            <BookOpen className="w-4 h-4 text-[var(--t-text-muted)]" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium text-[var(--t-text-primary)] truncate">{tutorial.title}</h3>
+                            <p className="text-xs text-[var(--t-text-faint)] truncate">{tutorial.description || "No description"}</p>
+                          </div>
+                          <div className="text-xs text-[var(--t-text-faint)]">
+                            {tutorial.steps?.length || 0} steps
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-[var(--t-text-faint)] group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Loading skeleton for main content */}
             {activeTab === "tutorials" && isLoadingTutorials ? (
@@ -3497,11 +3659,10 @@ export default function ITPTutorial() {
             </div>
           )}
 
-          {/* AI Chat - rendered as full-screen overlay via portal */}
         </div>
 
-        {/* Right Sidebar - Connection Info (hidden when AI chat is open) */}
-        <aside className={`${showAIChat ? 'hidden' : 'hidden xl:block'} w-80 shrink-0 p-4 lg:p-6`}>
+        {/* Right Sidebar - Connection Info */}
+        <aside className="hidden xl:block w-80 shrink-0 p-4 lg:p-6">
           <div className="sticky top-20 space-y-4">
             {/* SSH Connection Card */}
             <div className="bg-[var(--t-bg-secondary)] border border-[var(--t-border)] rounded-lg overflow-hidden">
@@ -3850,24 +4011,7 @@ export default function ITPTutorial() {
         </div>
       )}
 
-      {/* AI Assistant - Full-screen overlay */}
-      {showAIChat && (
-        <AIAssistant
-          isAdmin={isAdmin}
-          tutorialTitle={currentTutorial?.title}
-          tutorialDescription={currentTutorial?.description}
-          currentStepTitle={currentStepForAI?.heading}
-          currentStepContent={currentStepForAI?.explanation}
-          onClose={() => setShowAIChat(false)}
-          onOpenTutorials={() => setShowAIChat(false)}
-          showToast={showToast}
-        />
-      )}
-
       <Toast message={toast.message} visible={toast.visible} />
-
-      {/* Community Chat */}
-      <CommunityChat isAdmin={isAdmin} isVip={isVip} userRole={userRole} />
     </div>
   );
 }
