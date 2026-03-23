@@ -59,7 +59,32 @@
         ]
       }
     ],
-    "starred": true
+    "starred": false
+  },
+  {
+    "id": "jmhaj187a",
+    "title": "Set Git Global Username & Email",
+    "description": "These tell Git who you are when you make commits.",
+    "steps": [
+      {
+        "id": "vzjvavcc2",
+        "heading": "🔹 Step 1: Set Your Name",
+        "explanation": "",
+        "code": "git config --global user.name \"Your Name\""
+      },
+      {
+        "id": "8keu0m0k0",
+        "heading": "🔹 Step 2: Set Your Email",
+        "explanation": "",
+        "code": "git config --global user.email \"your_email@example.com\""
+      },
+      {
+        "id": "ftvlvy2s0",
+        "heading": "🔹 Step 3: Verify Your Config",
+        "explanation": "",
+        "code": "git config --global --list"
+      }
+    ]
   },
   {
     "id": "2lximt1zh",
