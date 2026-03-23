@@ -1,5 +1,67 @@
 [
   {
+    "id": "hm60afje4",
+    "title": "Connect to GitHub Using SSH",
+    "description": "A quick guide to creating an .ssh folder and connecting to GitHub using SSH keys. Fast, simple, and beginner-friendly.",
+    "steps": [
+      {
+        "id": "ghsbta21j",
+        "heading": "🔹 Step 1: Create .ssh Directory",
+        "explanation": "Open Terminal and run:",
+        "code": "mkdir -p ~/.ssh"
+      },
+      {
+        "id": "5fx4ti93i",
+        "heading": "🔹 Step 2: Set Correct Permissions",
+        "explanation": "",
+        "code": "chmod 700 ~/.ssh"
+      },
+      {
+        "id": "i7moe1uc5",
+        "heading": "Step 3: Generate SSH Key (Recommended: ed25519)",
+        "explanation": "Make sure to use your github email.",
+        "code": "ssh-keygen -t ed25519 -C \"your_email@example.com\""
+      },
+      {
+        "id": "0u9e3kxg8",
+        "heading": "🔹 Step 4: Copy Public Key",
+        "explanation": "",
+        "code": "cat ~/.ssh/id_ed25519.pub",
+        "images": [
+          {
+            "id": "img-1774241953299",
+            "url": "https://raw.githubusercontent.com/xalhexi-sch/xalhexi-sch.github.io/main/tutorial-images/ssh-1774241958043.jpg",
+            "position": "after",
+            "caption": "Copy everything shown and follow proceed to next step. ",
+            "captionPosition": "bottom"
+          }
+        ]
+      },
+      {
+        "id": "2shryh2yv",
+        "heading": "🔹 Step 5: Add SSH Key to GitHub",
+        "explanation": "1. Go to: **https://github.com/settings/keys**\n2. Click **New SSH key**\n3. Paste your key\n4. Save",
+        "code": ""
+      },
+      {
+        "id": "w3cfkcab4",
+        "heading": "🔹 Step 8: Test Connection",
+        "explanation": "Expected result:",
+        "code": "ssh -T git@github.com",
+        "images": [
+          {
+            "id": "img-1774242245195",
+            "url": "https://raw.githubusercontent.com/xalhexi-sch/xalhexi-sch.github.io/main/tutorial-images/Screenshot-2026-03-23-130402-1774242267513.png",
+            "position": "after",
+            "caption": "Expected result: Hi username! You've successfully authenticated...",
+            "captionPosition": "bottom"
+          }
+        ]
+      }
+    ],
+    "starred": true
+  },
+  {
     "id": "2lximt1zh",
     "title": "📌 IMPORTANT",
     "description": "",
@@ -59,7 +121,8 @@
         "code": "# start 22\n~/run_app4_bg.sh\n# stop test\n~/stop_app4.sh"
       }
     ],
-    "starred": true
+    "starred": false,
+    "locked": true
   },
   {
     "id": "btntsvw1k",
@@ -139,7 +202,8 @@
         "code": "UPDATE products\nSET name = 'Pro Gaming Laptop'\nWHERE name = 'Gaming Laptop';"
       }
     ],
-    "starred": true
+    "starred": false,
+    "locked": true
   },
   {
     "id": "vonvgdayy",
@@ -165,7 +229,8 @@
         "code": "<nav class=\"navbar navbar-expand-lg bg-body-tertiary\" data-bs-theme=\"dark\">\n  <div class=\"container-fluid\">\n    <a class=\"navbar-brand\" href=\"#\">Navbar</a>\n    <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNavDropdown\" aria-controls=\"navbarNavDropdown\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n      <span class=\"navbar-toggler-icon\"></span>\n    </button>\n    <div class=\"collapse navbar-collapse\" id=\"navbarNavDropdown\">\n      <ul class=\"navbar-nav\">\n        <li class=\"nav-item\">\n          <a class=\"nav-link active\" aria-current=\"page\" href=\"{{ base_url }}/\">Home</a>\n        </li>\n        <li class=\"nav-item\">\n          <a class=\"nav-link\" href=\"{{ base_url }}/contactus\">Contact Us</a>\n        </li>\n        <li class=\"nav-item\">\n          <a class=\"nav-link\" href=\"{{ base_url }}/products\">Products</a>\n        </li>\n        <li class=\"nav-item\">\n          <a class=\"nav-link\" href=\"{{ base_url }}/services\">Services</a>\n        </li>\n        <li class=\"nav-item dropdown\">\n          <a class=\"nav-link dropdown-toggle\" href=\"#\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n            About Us\n          </a>\n          <ul class=\"dropdown-menu\">\n            <li><a class=\"dropdown-item\" href=\"{{ base_url }}/register\">Register</a></li>\n            <li><a class=\"dropdown-item\" href=\"#\">The Company</a></li>\n            <li><a class=\"dropdown-item\" href=\"#\">The History</a></li>\n            <li><a class=\"dropdown-item\" href=\"#\">Contact Us</a></li>\n          </ul>\n        </li>\n      </ul>\n    </div>\n  </div>\n</nav>"
       }
     ],
-    "starred": false
+    "starred": false,
+    "locked": true
   },
   {
     "id": "1h5r70vne",
@@ -356,7 +421,7 @@
         "code": "git status\ngit add .\ngit commit -m \"Describe what you changed\"\ngit push"
       }
     ],
-    "locked": false
+    "locked": true
   },
   {
     "id": "348b9lrsw",
@@ -389,7 +454,7 @@
       }
     ],
     "starred": false,
-    "locked": false,
+    "locked": true,
     "vipOnly": true
   },
   {
@@ -497,7 +562,7 @@
     "id": "vps-wings-cookiehosting",
     "title": "VPS NEW NODE FOR WINGS PTERODACTYL",
     "description": "",
-    "locked": false,
+    "locked": true,
     "steps": [
       {
         "id": "vpsw-1",
@@ -608,7 +673,7 @@
     "id": "phpmyadmin-database-setup-cookiehosting",
     "title": "PHPMYADMIN / DATABASE SETUP",
     "description": "",
-    "locked": false,
+    "locked": true,
     "steps": [
       {
         "id": "pma-1",
@@ -714,6 +779,7 @@
         "explanation": "",
         "code": "from werkzeug.wrappers import Request, Response\nfrom werkzeug.routing import Map, Rule\nfrom werkzeug.exceptions import NotFound\nfrom werkzeug.utils import redirect\nimport sqlite3\n\nfrom jinja2 import Environment, FileSystemLoader\n\n\n# ------------------------\n# Basic setup\n# ------------------------\n\nBASE_URL = \"/it21_banas/webapps/app5\"\n\nenv = Environment(loader=FileSystemLoader(\"templates\"))\n\n\ndef render(template, **context):\n    context.update({\n        \"base_url\": BASE_URL,\n    })\n\n    return Response(\n        env.get_template(template).render(**context),\n        content_type=\"text/html\"\n    )\n\n\n# ------------------------\n# Routes\n# ------------------------\n\nurl_map = Map([\n    Rule(\"/\", endpoint=\"home\"),\n\n    Rule(\"/products\", endpoint=\"products\"),\n    Rule(\"/products/add\", endpoint=\"add_product\", methods=[\"GET\", \"POST\"]),\n    Rule(\"/products/view\", endpoint=\"view_products\"),\n\n    Rule(\"/services\", endpoint=\"services\"),\n    Rule(\"/register\", endpoint=\"register\", methods=[\"GET\", \"POST\"]),\n])\n\n\n# ------------------------\n# View functions\n# ------------------------\n\ndef home(request):\n    return render(\"home.html\")\n\n\ndef register(request):\n    error = None\n    success = None\n\n    if request.method == \"POST\":\n\n        email = request.form.get(\"email\").strip()\n        password = request.form.get(\"password\").strip()\n\n        if not email:\n            error = \"All fields are required.\"\n        else:\n            success = f\"Welcome, {email}! You are registered.\"\n\n    return render(\"register.html\", error=error, success=success)\n\n\ndef products(request):\n\n    conn = sqlite3.connect(\"products.db\")\n    cursor = conn.cursor()\n\n    cursor.execute(\"SELECT id, name, brand, price, stock FROM products\")\n    rows = cursor.fetchall()\n\n    conn.close()\n\n    product_items = []\n\n    for row in rows:\n        product_items.append({\n            \"id\": row[0],\n            \"name\": row[1],\n            \"brand\": row[2],\n            \"price\": row[3],\n            \"stock\": row[4]\n        })\n\n    return render(\"products.html\", product_items=product_items)\n\n\ndef services(request):\n    return render(\"services.html\")\n\n\ndef add_product(request):\n\n    if request.method == \"POST\":\n\n        name = request.form.get(\"name\")\n        brand = request.form.get(\"brand\")\n        price = request.form.get(\"price\")\n        stock = request.form.get(\"stock\")\n\n        conn = sqlite3.connect(\"products.db\")\n        cursor = conn.cursor()\n\n        cursor.execute(\n            \"INSERT INTO products (name, brand, price, stock) VALUES (?, ?, ?, ?)\",\n            (name, brand, price, stock)\n        )\n\n        conn.commit()\n        conn.close()\n\n        return redirect(\"/it21_banas/webapps/app5/products/view\")\n\n    return render(\"add_product.html\")\n\n\ndef view_products(request):\n    return products(request)\n\n\n# ------------------------\n# WSGI app\n# ------------------------\n\n@Request.application\ndef app(request):\n\n    adapter = url_map.bind_to_environ(request.environ)\n\n    try:\n        endpoint, values = adapter.match()\n        return globals()[endpoint](request, **values)\n\n    except NotFound:\n        return Response(\"404 Not Found\", status=404)"
       }
-    ]
+    ],
+    "locked": true
   }
 ]
