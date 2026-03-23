@@ -3513,7 +3513,7 @@ export default function ITPTutorial() {
                 <div>
                   <p className="text-xs text-[var(--t-text-muted)] mb-1.5">Connect to server:</p>
                   <CopyableCommand
-                    command="ssh it21_lastname@172.17.100.15 -p 9898"
+                    command="ssh it21_lastname@172.17.107.168 -p 2222"
                     onCopy={handleCopy}
                   />
                 </div>
