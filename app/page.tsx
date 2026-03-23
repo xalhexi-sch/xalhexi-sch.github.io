@@ -255,7 +255,7 @@ const defaultTutorials: Tutorial[] = [
         id: "3-1",
         heading: "Basic SSH Command",
         explanation: "Connect to the server using your credentials.",
-        code: "ssh it21_lastname@172.17.100.15 -p 9898",
+        code: "ssh it21_lastname@172.17.100.15 -p 2222",
       },
       {
         id: "3-2",
@@ -274,7 +274,7 @@ const defaultTutorials: Tutorial[] = [
         id: "4-1",
         heading: "Connect to the Server",
         explanation: "Open Terminal and SSH into your school server. When prompted, type 'yes' if asked to continue connecting, then enter your password.",
-        code: "ssh it21_lastname@172.17.100.15 -p 9898",
+        code: "ssh it21_lastname@172.17.100.15 -p 2222",
       },
       {
         id: "4-2",
@@ -3519,7 +3519,7 @@ export default function ITPTutorial() {
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[var(--t-text-muted)]">
                   <Server className="w-3.5 h-3.5" />
-                  <span>Port: 9898</span>
+                  <span>Port: 2222</span>
                 </div>
               </div>
             </div>
