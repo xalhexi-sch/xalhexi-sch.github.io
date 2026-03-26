@@ -831,5 +831,30 @@
         "code": "https://v0.app/ref/QDFOJ1"
       }
     ]
+  },
+  {
+    "id": "ry9r9w2a0",
+    "title": "SOURCE AND GUNICORN",
+    "description": "",
+    "steps": [
+      {
+        "id": "o19ufy9mk",
+        "heading": "activate virt",
+        "explanation": "",
+        "code": "source /opt/virt/bin/activate"
+      },
+      {
+        "id": "6dn4twlx5",
+        "heading": "go to your folder",
+        "explanation": "",
+        "code": "cd app2 # or depende sa folder name nimo"
+      },
+      {
+        "id": "8r19jhzaq",
+        "heading": "gunicorn enable",
+        "explanation": "",
+        "code": "gunicorn -b 127.0.0.1:PORT app:app\n\n# change your {PORT}"
+      }
+    ]
   }
 ]
