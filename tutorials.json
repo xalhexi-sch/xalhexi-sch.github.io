@@ -5,6 +5,12 @@
     "description": "ITP",
     "steps": [
       {
+        "id": "vygwehhst",
+        "heading": "⚠️ BE CAREFUL !!!! CHANGE LAST NAME!!!!",
+        "explanation": "",
+        "code": ""
+      },
+      {
         "id": "3m3911s3p",
         "heading": "🗑️ STEP 1 — ACTIVATE",
         "explanation": "",
@@ -87,12 +93,6 @@
         "heading": "Screenshot 14:",
         "explanation": "",
         "code": ".tables\n.quit"
-      },
-      {
-        "id": "vygwehhst",
-        "heading": "⚠️ BE CAREFUL !!!! CHANGE LAST NAME!!!!",
-        "explanation": "",
-        "code": ""
       }
     ],
     "starred": true
