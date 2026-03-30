@@ -856,5 +856,96 @@
         "code": "gunicorn -b 127.0.0.1:PORT app:app\n\n# change your {PORT}"
       }
     ]
+  },
+  {
+    "id": "7i1h7yc7o",
+    "title": "EXAM FILES",
+    "description": "ITP",
+    "steps": [
+      {
+        "id": "3m3911s3p",
+        "heading": "🗑️ STEP 1 — Delete old folder",
+        "explanation": "",
+        "code": "source /opt/virt/bin/activate"
+      },
+      {
+        "id": "g9ijjtfft",
+        "heading": "📁 STEP 2 — Create fresh project",
+        "explanation": "",
+        "code": "mkdir ~/ip1_project\ncd ~/ip1_project\nalembic init alembic"
+      },
+      {
+        "id": "5w5wx1v6u",
+        "heading": "📄 STEP 3 — Add your 3 files",
+        "explanation": "",
+        "code": "nano ~/ip1_project/database.py"
+      },
+      {
+        "id": "6z61ohv39",
+        "heading": "PASTE THIS",
+        "explanation": "",
+        "code": "from sqlalchemy import create_engine\nfrom sqlalchemy.orm import declarative_base\n\nengine = create_engine(\"sqlite:///banas.db\")\nBase = declarative_base()"
+      },
+      {
+        "id": "s2vlofsnb",
+        "heading": "📄 STEP 3.1 — Add your 3 files",
+        "explanation": "",
+        "code": "nano ~/ip1_project/models.py"
+      },
+      {
+        "id": "ct54f8sv9",
+        "heading": "PASTE THIS",
+        "explanation": "",
+        "code": "from sqlalchemy import (\n    Column, Integer, String, Text, Numeric, Date, DateTime,\n    ForeignKey, func\n)\nfrom database import Base\n\n\nclass BanasCategories(Base):\n    __tablename__ = \"banas_categories\"\n\n    category_id = Column(Integer, primary_key=True, autoincrement=True)\n    name        = Column(String(100), nullable=False)\n    description = Column(Text)\n\n\nclass BanasSuppliers(Base):\n    __tablename__ = \"banas_suppliers\"\n\n    supplier_id    = Column(Integer, primary_key=True, autoincrement=True)\n    name           = Column(String(150), nullable=False)\n    contact_person = Column(String(100))\n    phone          = Column(String(20))\n    email          = Column(String(100))\n    address        = Column(Text)\n\n\nclass BanasCashiers(Base):\n    __tablename__ = \"banas_cashiers\"\n\n    cashier_id    = Column(Integer, primary_key=True, autoincrement=True)\n    full_name     = Column(String(150), nullable=False)\n    username      = Column(String(50),  nullable=False, unique=True)\n    password_hash = Column(String(255), nullable=False)\n    role          = Column(String(30),  nullable=False, default=\"cashier\")\n    status        = Column(String(20),  nullable=False, default=\"active\")\n\n\nclass BanasCustomers(Base):\n    __tablename__ = \"banas_customers\"\n\n    customer_id    = Column(Integer, primary_key=True, autoincrement=True)\n    full_name      = Column(String(150), nullable=False)\n    phone          = Column(String(20))\n    email          = Column(String(100))\n    loyalty_points = Column(Integer, nullable=False, default=0)\n\n\nclass BanasProducts(Base):\n    __tablename__ = \"banas_products\"\n\n    product_id    = Column(Integer, primary_key=True, autoincrement=True)\n    category_id   = Column(Integer, ForeignKey(\"banas_categories.category_id\"))\n    supplier_id   = Column(Integer, ForeignKey(\"banas_suppliers.supplier_id\"))\n    name          = Column(String(200), nullable=False)\n    sku           = Column(String(80),  nullable=False, unique=True)\n    barcode       = Column(String(80))\n    cost_price    = Column(Numeric(10, 2), nullable=False, default=0.00)\n    selling_price = Column(Numeric(10, 2), nullable=False, default=0.00)\n    stock_qty     = Column(Integer, nullable=False, default=0)\n    reorder_level = Column(Integer, nullable=False, default=0)\n    unit          = Column(String(30), nullable=False, default=\"piece\")\n    status        = Column(String(20), nullable=False, default=\"active\")\n\n\nclass BanasDiscounts(Base):\n    __tablename__ = \"banas_discounts\"\n\n    discount_id = Column(Integer, primary_key=True, autoincrement=True)\n    name        = Column(String(100), nullable=False)\n    type        = Column(String(30),  nullable=False)\n    value       = Column(Numeric(8, 2), nullable=False)\n    valid_from  = Column(Date)\n    valid_until = Column(Date)\n    applies_to  = Column(String(50))\n    status      = Column(String(20), nullable=False, default=\"active\")\n\n\nclass BanasSales(Base):\n    __tablename__ = \"banas_sales\"\n\n    sale_id         = Column(Integer, primary_key=True, autoincrement=True)\n    cashier_id      = Column(Integer, ForeignKey(\"banas_cashiers.cashier_id\"))\n    customer_id     = Column(Integer, ForeignKey(\"banas_customers.customer_id\"))\n    sale_date       = Column(DateTime, nullable=False, default=func.now())\n    subtotal        = Column(Numeric(12, 2), nullable=False, default=0.00)\n    discount_amount = Column(Numeric(12, 2), nullable=False, default=0.00)\n    tax_amount      = Column(Numeric(12, 2), nullable=False, default=0.00)\n    total_amount    = Column(Numeric(12, 2), nullable=False, default=0.00)\n    payment_method  = Column(String(30),  nullable=False)\n    amount_tendered = Column(Numeric(12, 2), nullable=False, default=0.00)\n    change_given    = Column(Numeric(12, 2), nullable=False, default=0.00)\n    status          = Column(String(20), nullable=False, default=\"completed\")\n\n\nclass BanasSaleItems(Base):\n    __tablename__ = \"banas_sale_items\"\n\n    sale_item_id = Column(Integer, primary_key=True, autoincrement=True)\n    sale_id      = Column(Integer, ForeignKey(\"banas_sales.sale_id\"), nullable=False)\n    product_id   = Column(Integer, ForeignKey(\"banas_products.product_id\"), nullable=False)\n    quantity     = Column(Integer, nullable=False, default=1)\n    unit_price   = Column(Numeric(10, 2), nullable=False)\n    discount_pct = Column(Numeric(5, 2),  nullable=False, default=0.00)\n    line_total   = Column(Numeric(12, 2), nullable=False)\n\n\nclass BanasStockMovements(Base):\n    __tablename__ = \"banas_stock_movements\"\n\n    movement_id = Column(Integer, primary_key=True, autoincrement=True)\n    product_id  = Column(Integer, ForeignKey(\"banas_products.product_id\"), nullable=False)\n    cashier_id  = Column(Integer, ForeignKey(\"banas_cashiers.cashier_id\"))\n    type        = Column(String(20), nullable=False)\n    quantity    = Column(Integer, nullable=False)\n    reason      = Column(Text)\n    moved_at    = Column(DateTime, nullable=False, default=func.now())\n\n\nclass BanasPurchaseOrders(Base):\n    __tablename__ = \"banas_purchase_orders\"\n\n    po_id         = Column(Integer, primary_key=True, autoincrement=True)\n    supplier_id   = Column(Integer, ForeignKey(\"banas_suppliers.supplier_id\"))\n    cashier_id    = Column(Integer, ForeignKey(\"banas_cashiers.cashier_id\"))\n    order_date    = Column(DateTime, nullable=False, default=func.now())\n    received_date = Column(Date)\n    total_cost    = Column(Numeric(12, 2), nullable=False, default=0.00)\n    status        = Column(String(20), nullable=False, default=\"pending\")\n\n\nclass BanasPoItems(Base):\n    __tablename__ = \"banas_po_items\"\n\n    po_item_id   = Column(Integer, primary_key=True, autoincrement=True)\n    po_id        = Column(Integer, ForeignKey(\"banas_purchase_orders.po_id\"), nullable=False)\n    product_id   = Column(Integer, ForeignKey(\"banas_products.product_id\"), nullable=False)\n    qty_ordered  = Column(Integer, nullable=False, default=0)\n    qty_received = Column(Integer, nullable=False, default=0)\n    unit_cost    = Column(Numeric(10, 2), nullable=False, default=0.00)"
+      },
+      {
+        "id": "es42vz5aj",
+        "heading": "nano ~/ip1_project/alembic/env.py",
+        "explanation": "",
+        "code": "nano ~/ip1_project/alembic/env.py"
+      },
+      {
+        "id": "825035vcp",
+        "heading": "PASTE THIS",
+        "explanation": "",
+        "code": "import sys\nimport os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n\nfrom logging.config import fileConfig\nfrom sqlalchemy import engine_from_config, pool\nfrom alembic import context\nfrom models import Base\n\nconfig = context.config\n\nif config.config_file_name is not None:\n    fileConfig(config.config_file_name)\n\ntarget_metadata = Base.metadata\n\n\ndef run_migrations_offline() -> None:\n    url = config.get_main_option(\"sqlalchemy.url\")\n    context.configure(\n        url=url,\n        target_metadata=target_metadata,\n        literal_binds=True,\n        dialect_opts={\"paramstyle\": \"named\"},\n    )\n    with context.begin_transaction():\n        context.run_migrations()\n\n\ndef run_migrations_online() -> None:\n    connectable = engine_from_config(\n        config.get_section(config.config_ini_section, {}),\n        prefix=\"sqlalchemy.\",\n        poolclass=pool.NullPool,\n    )\n    with connectable.connect() as connection:\n        context.configure(\n            connection=connection,\n            target_metadata=target_metadata,\n        )\n        with context.begin_transaction():\n            context.run_migrations()\n\n\nif context.is_offline_mode():\n    run_migrations_offline()\nelse:\n    run_migrations_online()"
+      },
+      {
+        "id": "ythy54za9",
+        "heading": "⚙️ STEP 4 — Fix alembic.ini (one command)",
+        "explanation": "",
+        "code": "sed -i 's|sqlalchemy.url = driver://user:pass@localhost/dbname|sqlalchemy.url = sqlite:///banas.db|' ~/ip1_project/alembic.ini"
+      },
+      {
+        "id": "umhrrv3ei",
+        "heading": "🚀 STEP 5 — Run migrations",
+        "explanation": "",
+        "code": "cd ~/ip1_project\nalembic revision --autogenerate -m \"initial\"\nalembic upgrade head"
+      },
+      {
+        "id": "yx7gb91hs",
+        "heading": "📸 STEP 6 — Take ALL screenshots (one by one!) Screenshot 1:",
+        "explanation": "Screenshot 1:",
+        "code": "ls -lh && find . -name \"*.db\" && pwd"
+      },
+      {
+        "id": "8g95r39k6",
+        "heading": "📸 STEP 6.1 — Take ALL screenshots (one by one!)",
+        "explanation": "Screenshot 2 — the alembic output from Step 5 above\nScreenshots 3–13 — open sqlite3 then run each schema one at a time:",
+        "code": "sqlite3 banas.db"
+      },
+      {
+        "id": "3kzp7s818",
+        "heading": "Screenshots 3–13 — ISA ISAHA UG RUN.",
+        "explanation": "EXAMPLE:\n.schema banas_sales \n\ntapos enter dayon",
+        "code": ".schema banas_categories\n.schema banas_suppliers\n.schema banas_cashiers\n.schema banas_customers\n.schema banas_products\n.schema banas_discounts\n.schema banas_sales\n.schema banas_sale_items\n.schema banas_stock_movements\n.schema banas_purchase_orders\n.schema banas_po_items"
+      },
+      {
+        "id": "kp9tofrzp",
+        "heading": "Screenshot 14:",
+        "explanation": "",
+        "code": ".tables\n.quit"
+      }
+    ]
   }
 ]
