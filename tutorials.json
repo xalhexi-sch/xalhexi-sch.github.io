@@ -6,7 +6,7 @@
     "steps": [
       {
         "id": "3m3911s3p",
-        "heading": "🗑️ STEP 1 — Delete old folder",
+        "heading": "🗑️ STEP 1 — ACTIVATE",
         "explanation": "",
         "code": "source /opt/virt/bin/activate"
       },
@@ -87,6 +87,12 @@
         "heading": "Screenshot 14:",
         "explanation": "",
         "code": ".tables\n.quit"
+      },
+      {
+        "id": "vygwehhst",
+        "heading": "⚠️ BE CAREFUL !!!! CHANGE LAST NAME!!!!",
+        "explanation": "",
+        "code": ""
       }
     ],
     "starred": true
