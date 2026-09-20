@@ -39,31 +39,28 @@ export default function FilePreviewModal({ file, onClose }: FilePreviewModalProp
     }
 
     const currentFile = file
-    async function getSignedUrl() {
-      setIsLoadingUrl(true)
+    // Immediately set public URL for zero-delay instant rendering
+    const { data: pubData } = supabase.storage
+      .from('hub-files')
+      .getPublicUrl(currentFile.storage_path)
+    if (pubData?.publicUrl) {
+      setSignedUrl(pubData.publicUrl)
+    }
+
+    // Fetch signed URL in background for secure sharing if desired
+    async function fetchSignedUrl() {
       try {
-        // Create 1-hour signed URL from Supabase Storage
-        const { data, error } = await supabase.storage
+        const { data } = await supabase.storage
           .from('hub-files')
           .createSignedUrl(currentFile.storage_path, 3600)
-
-        if (error || !data?.signedUrl) {
-          // Fallback to public URL if bucket is public
-          const { data: pubData } = supabase.storage
-            .from('hub-files')
-            .getPublicUrl(currentFile.storage_path)
-          setSignedUrl(pubData.publicUrl)
-        } else {
+        if (data?.signedUrl) {
           setSignedUrl(data.signedUrl)
         }
       } catch (err) {
-        console.error('Failed to create signed URL:', err)
-      } finally {
-        setIsLoadingUrl(false)
+        // Fallback already in place
       }
     }
-
-    getSignedUrl()
+    fetchSignedUrl()
   }, [file, supabase])
 
   // ESC key to close

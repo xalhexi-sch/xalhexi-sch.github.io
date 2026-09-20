@@ -73,7 +73,11 @@ export default function FileBrowser({
         },
         (payload) => {
           if (payload.eventType === 'INSERT') {
-            setFiles((prev) => [payload.new as HubFile, ...prev])
+            const newFile = payload.new as HubFile
+            setFiles((prev) => {
+              if (prev.some((f) => f.id === newFile.id)) return prev
+              return [newFile, ...prev]
+            })
           } else if (payload.eventType === 'DELETE') {
             setFiles((prev) => prev.filter((f) => f.id !== payload.old.id))
           }
@@ -196,7 +200,12 @@ export default function FileBrowser({
           roomId={roomId}
           userId={currentUserId}
           userEmail={currentUserEmail}
-          onFileUploaded={(newFile) => setFiles((prev) => [newFile, ...prev])}
+          onFileUploaded={(newFile) =>
+            setFiles((prev) => {
+              if (prev.some((f) => f.id === newFile.id)) return prev
+              return [newFile, ...prev]
+            })
+          }
         />
 
         {/* Filter Pills */}
