@@ -1,17 +1,17 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { Toaster } from 'sonner'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
+const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-mono' })
 
 export const metadata: Metadata = {
-  title: "xalhexi.wtf - Tutorials & Repos",
-  description: 'Tutorials, guides, and repository browser by xalhexi-sch',
-  generator: 'v0.dev',
+  title: 'xalhexi Hub — Private Files & Chat',
+  description: 'Private, self-hosted file hub, realtime multi-room chat, and document preview platform.',
   icons: {
     icon: '/favicon.png',
-    apple: '/favicon.png',
+    apple: '/apple-icon.png',
   },
 }
 
@@ -21,9 +21,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`font-sans antialiased bg-background text-foreground`}>
+    <html lang="en" className={`dark ${geist.variable} ${geistMono.variable}`}>
+      <body className="font-sans antialiased bg-[#090a0f] text-zinc-100 min-h-screen selection:bg-violet-500 selection:text-white">
         {children}
+        <Toaster position="bottom-right" theme="dark" richColors />
       </body>
     </html>
   )
