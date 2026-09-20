@@ -51,7 +51,7 @@ export default async function LandingPage() {
                 x
               </div>
               <span className="font-bold text-sm tracking-tight text-white group-hover:text-violet-400 transition-colors">
-                xalhexi<span className="text-violet-400">.wtf</span>
+                old.xalhexi<span className="text-violet-400">.wtf</span>
               </span>
             </Link>
 
@@ -481,7 +481,7 @@ export default async function LandingPage() {
       <footer className="border-t border-zinc-800/80 bg-zinc-950/60 py-8 px-4 sm:px-6 mt-12">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-mono">
           <div className="flex items-center gap-2">
-            <span>xalhexi.wtf</span>
+            <span>old.xalhexi.wtf</span>
             <span>•</span>
             <span>Michael Nas</span>
             <span>•</span>

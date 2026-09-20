@@ -112,7 +112,7 @@ export default function Sidebar({
               href="/"
               className="text-[10px] text-zinc-500 hover:text-violet-400 font-mono block transition-colors"
             >
-              ← xalhexi.wtf
+              ← old.xalhexi.wtf
             </a>
           </div>
         </div>

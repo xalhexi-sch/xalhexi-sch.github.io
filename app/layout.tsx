@@ -7,8 +7,8 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
 const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-mono' })
 
 export const metadata: Metadata = {
-  title: 'xalhexi Hub — Private Files & Chat',
-  description: 'Private, self-hosted file hub, realtime multi-room chat, and document preview platform.',
+  title: 'old.xalhexi.wtf — Personal File Hub & Chat',
+  description: 'Private, self-hosted file hub, realtime multi-room chat, and document preview platform hosted on old.xalhexi.wtf.',
   icons: {
     icon: '/favicon.png',
     apple: '/apple-icon.png',

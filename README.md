@@ -1,131 +1,119 @@
 <div align="center">
 
-# xalhexi.wtf
+# old.xalhexi.wtf
 
-**A tutorial hub built for IT students who struggle with unfamiliar code.**
+**Personal File Hub + Realtime Multi-Room Chat + Document & Media Preview Platform**
 
-[![Next.js](https://img.shields.io/badge/Next.js-000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-0f172a?logo=tailwindcss&logoColor=38bdf8)](https://tailwindcss.com)
-[![Supabase](https://img.shields.io/badge/Supabase-3ecf8e?logo=supabase&logoColor=white)](https://supabase.com)
-[![GitHub API](https://img.shields.io/badge/GitHub_API-181717?logo=github&logoColor=white)](https://docs.github.com/en/rest)
+[![Next.js](https://img.shields.io/badge/Next.js-16.0-000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19.2-20232a?logo=react&logoColor=61dafb)](https://react.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-0f172a?logo=tailwindcss&logoColor=38bdf8)](https://tailwindcss.com)
+[![Supabase](https://img.shields.io/badge/Supabase-Database%20%26%20Storage-3ecf8e?logo=supabase&logoColor=white)](https://supabase.com)
 [![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000?logo=vercel&logoColor=white)](https://vercel.com)
 
 ---
 
-*Follow step-by-step guides with real code, screenshots, and one-click copy.*
-*No more getting lost in docs -- just open, read, and code along.*
+*A private, self-hosted workspace replacing the need to shuffle files and messages across Google Drive, Messenger, and Facebook.*  
+*Includes a minimalist, editorial developer landing page and portfolio showcase.*
+
+[**Live Web App: old.xalhexi.wtf**](https://old.xalhexi.wtf) • [**Workspace Hub**](https://old.xalhexi.wtf/hub) • [**Portfolio '24**](http://xalhexi.my.canva.site/)
 
 </div>
 
 ---
 
-## What is this?
+## Overview
 
-A web app where IT students can find **step-by-step tutorials** on Git, SSH, Python, Ubuntu, and more -- written in a way that's easy to follow even if you're just starting out. It also doubles as a **repository browser** with a built-in **diff viewer** and an **AI assistant** powered by Gemini.
+**old.xalhexi.wtf** is an all-in-one personal productivity platform and developer home built for personal and small trusted group collaboration.
 
-Built by [**xalhexi**](https://github.com/xalhexi-sch) for fellow students who want a simple, clean guide instead of digging through scattered documentation.
+- **Editorial Developer Showcase (`/`)**: Dark, brutalist, minimal developer profile highlighting engineering projects, creative portfolio on Canva, and GitHub ecosystem.
+- **Private Personal Hub (`/hub`)**: Authenticated workspace featuring real-time multi-room chat, high-speed file storage, and instant document previews.
+- **Whitelist Security Gate (`/login`)**: Strict access control backed by Supabase Auth and database-level `allowed_users` whitelist policies.
 
 ---
 
-## Features
+## Core Features
 
-| | Feature | Description |
+### 📁 File Hub & Storage
+- **Direct Client-to-Supabase Uploads**: Bypasses Vercel’s 4.5MB serverless payload restriction, allowing large images, documents, and assets to be uploaded seamlessly.
+- **Visual Thumbnail Grid**: Crisp, responsive card grid with live CDN-cached image thumbnails and detailed metadata (file size, type, uploader, timestamp).
+- **Instant Search & Realtime Sync**: Search files by filename in real-time, with automatic synchronization across all active devices.
+
+### 💬 Realtime Multi-Room Chat
+- **Multi-Room Channels**: Dedicated topic rooms including `#General`, `#Urian`, `#xalhexi-films`, and `#Personal`.
+- **Instant Live Messaging**: Sub-second message delivery powered by Supabase Realtime WebSocket subscriptions with optimistic UI updates.
+- **Custom Room Creator**: Create and archive private channels on demand.
+
+### 🔍 Document & Media Preview
+- **High-Resolution Lightbox**: Zero-latency preview for PNG, JPG, JPEG, and WebP with responsive pan, zoom, and direct download options.
+- **Inline PDF Reader**: Embedded reader for documents, slide decks, and study material.
+- **Office Document Previews**: Integrated metadata viewer with hooks ready for self-hosted Gotenberg and OnlyOffice inline rendering.
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Purpose |
 |---|---|---|
-| **01** | Tutorials with code blocks | Syntax-highlighted code with line numbers and one-click copy |
-| **02** | Screenshot support | Upload images before or after code blocks in any step |
-| **03** | Repository browser | Browse any public repo's files with line-numbered code viewer |
-| **04** | Diff viewer | See recent file changes with green/red unified diff (last 2 commits) |
-| **05** | AI assistant | Gemini-powered chat for debugging, code help, and general questions |
-| **06** | Public chat history | All AI conversations stored in Supabase -- shared and persistent |
-| **07** | VIP crown system | Mark tutorials as VIP-only -- guests see locked state, VIPs get read access |
-| **08** | Role-based auth | JWT-secured Admin (full control) and VIP (read-only) roles |
-| **09** | Hash routing | Direct links to tutorials and repo files (`#/tutorials/id`, `#/repos/name/path`) |
-| **10** | Instant loading | Tutorials cached locally -- switch between them with zero delay |
-| **11** | VS Code themes | Dark+, Light, and Cyber themes with familiar IDE colors |
-| **12** | Search | Find any tutorial by keyword instantly |
-| **13** | GitHub-synced | Tutorials stored in the repo -- update once, live for everyone |
-| **14** | Drag-to-reorder | Admins can drag tutorials to set the order |
-| **15** | Priority starring | Star important tutorials so they stand out |
-| **16** | Rate-limit safe | Server-side caching prevents GitHub API rate limits |
+| **Frontend Framework** | [Next.js 16 (App Router)](https://nextjs.org) | Server Components, dynamic streaming, and client transitions |
+| **UI Library** | [React 19](https://react.dev) | Reactive components and state synchronization |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com) | Editorial dark aesthetic, custom gradients, and CSS variables |
+| **Icons & Notifications** | [Lucide React](https://lucide.dev) & [Sonner](https://sonner.emilkowal.ski) | Crisp UI icons and toast notifications |
+| **Database & Auth** | [Supabase PostgreSQL](https://supabase.com) | User authentication, RLS security policies, and whitelist check |
+| **Storage & CDN** | [Supabase Storage](https://supabase.com/storage) | Bucket-based file storage with public CDN caching |
+| **Realtime Engine** | [Supabase Realtime](https://supabase.com/realtime) | WebSocket message broadcast and presence sync |
+| **Deployment** | [Vercel](https://vercel.com) | Edge deployment connected to GitHub CI/CD |
 
 ---
 
-## Roles and Permissions
+## Environment Configuration
 
-| Action | Admin | VIP | Guest |
-|---|:---:|:---:|:---:|
-| View regular tutorials | Yes | Yes | Yes |
-| View VIP-crowned tutorials | Yes | Yes | No (locked) |
-| Create / edit / delete tutorials | Yes | No | No |
-| Lock / unlock tutorials | Yes | No | No |
-| Star / crown tutorials | Yes | No | No |
-| Access terminal settings | Yes | No | No |
-| Save / sync to GitHub | Yes | No | No |
-| Use AI assistant | Yes | Yes | Yes |
-| Browse repositories | Yes | Yes | Yes |
-| View file diffs | Yes | Yes | Yes |
+Create a `.env.local` file in the root directory:
+
+```env
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://<YOUR_PROJECT_REF>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<YOUR_SUPABASE_ANON_KEY>
+SUPABASE_SERVICE_ROLE_KEY=<YOUR_SUPABASE_SERVICE_ROLE_KEY>
+```
+
+> **Note**: For production deployments on Vercel, ensure these environment variables are added under **Project Settings → Environment Variables**.
 
 ---
 
-## How to use
+## Local Development
 
-### As a student / visitor
+```bash
+# Clone the repository
+git clone https://github.com/xalhexi-sch/xalhexi-sch.github.io.git
+cd xalhexi-sch.github.io
 
-1. Open the site
-2. Browse tutorials in the **sidebar** or switch to the **Repositories** tab
-3. Click any tutorial -- code blocks have a **Copy** button in the step header
-4. Use the **search bar** to find tutorials by keyword
-5. Switch themes with the **moon/sun/zap** icon in the header
-6. Open the **AI assistant** to ask questions, debug errors, or get code help
-7. Share direct links using hash routes (e.g. `#/tutorials/git-basics`)
+# Install dependencies with pnpm
+pnpm install
 
-### As an admin
+# Run database migrations in Supabase SQL Editor
+# (Copy schema from supabase/schema.sql)
 
-1. Click the **gear icon** and sign in with admin credentials
-2. **Create** new tutorials with the + button, **edit** or **delete** existing ones
-3. **Drag** tutorials up/down to reorder, or click the **star** to mark as priority
-4. **Crown** tutorials to restrict them to VIP users only
-5. **Upload images** from your PC when editing steps (PNG, JPEG, WEBP)
-6. Click **Save to GitHub** to push changes live for all visitors
-7. Click **Sync from GitHub** to pull the latest version
-8. Click **View Changes** on any repo file to see a diff of recent commits
+# Start development server
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view the landing page, or navigate to `/login` to access the hub.
 
 ---
 
-## Tech stack
+## Author & Ecosystem
 
-| Technology | Purpose |
-|---|---|
-| [Next.js](https://nextjs.org) | App Router, API routes, SSR |
-| [Tailwind CSS](https://tailwindcss.com) | Styling and theming |
-| [Supabase](https://supabase.com) | Chat history storage (public, no auth required) |
-| [Google Gemini](https://ai.google.dev) | AI assistant (via Vercel AI SDK) |
-| [highlight.js](https://highlightjs.org) | Syntax highlighting |
-| [Lucide React](https://lucide.dev) | Icons |
-| [GitHub API](https://docs.github.com/en/rest) | Tutorial storage, repo browsing, image uploads, diff viewer |
+Crafted with care by **Michael Nas** (**xalhexi**):
 
----
-
-## Environment variables
-
-| Variable | Description |
-|---|---|
-| `GITHUB_TOKEN` | GitHub personal access token (for push/pull/upload) |
-| `GITHUB_REPO` | Repository name, e.g. `xalhexi-sch/xalhexi-sch.github.io` |
-| `ADMIN_USERNAME` | Admin login username |
-| `ADMIN_PASSWORD` | Admin login password |
-| `VIP_USERNAME` | VIP login username |
-| `VIP_PASSWORD` | VIP login password |
-| `JWT_SECRET` | Secret key for signing JWT tokens |
-| `SUPABASE_URL` | Supabase project URL (auto-set by integration) |
-| `SUPABASE_ANON_KEY` | Supabase anon key (auto-set by integration) |
+- **Live Site**: [old.xalhexi.wtf](https://old.xalhexi.wtf)
+- **Portfolio**: [xalhexi.my.canva.site](http://xalhexi.my.canva.site/)
+- **GitHub Profiles**:
+  - [@xalhexi-sch](https://github.com/xalhexi-sch) (Academic & Primary Repos)
+  - [@xalhexi](https://github.com/xalhexi) (Main Profile)
+  - [@xalhexidev](https://github.com/xalhexidev) (Developer Projects)
 
 ---
 
 <div align="center">
-
-**Made by [xalhexi](https://github.com/xalhexi-sch)**
-
-*For IT students, by an IT student.*
-
+  <sub>Built for private workflows. No AI slop. 2026.</sub>
 </div>
