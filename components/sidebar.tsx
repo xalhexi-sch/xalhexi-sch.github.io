@@ -108,7 +108,12 @@ export default function Sidebar({
             <h1 className="text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
               <span>xalhexi Hub</span>
             </h1>
-            <span className="text-[10px] text-zinc-500 font-mono block">Private Workspace</span>
+            <a
+              href="/"
+              className="text-[10px] text-zinc-500 hover:text-violet-400 font-mono block transition-colors"
+            >
+              ← xalhexi.wtf
+            </a>
           </div>
         </div>
 

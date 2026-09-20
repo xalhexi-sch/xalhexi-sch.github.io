@@ -46,13 +46,16 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse
   }
 
+  const isProtectedPath = path.startsWith('/hub')
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user && path !== '/login') {
+  if (!user && isProtectedPath) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    url.searchParams.set('next', path)
     return NextResponse.redirect(url)
   }
 

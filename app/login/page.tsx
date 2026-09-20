@@ -21,7 +21,7 @@ export default function LoginPage() {
     async function checkExistingSession() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        router.push('/')
+        router.push('/hub')
       }
     }
     checkExistingSession()
@@ -42,7 +42,7 @@ export default function LoginPage() {
       )
     }
 
-    router.push('/')
+    router.push('/hub')
     router.refresh()
   }
 
